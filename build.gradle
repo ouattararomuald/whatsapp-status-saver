@@ -1,10 +1,26 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
   ext.kotlin_version = "1.3.72"
+  ext.workManager = '2.3.4'
+
+  ext.versions = [
+    'scene': '1.0.4',
+    'workManager': '2.3.4',
+  ]
+
+  ext.deps = [
+    'androidx': [
+      'viewpager2': 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
+    ],
+    'workManager': "androidx.work:work-runtime-ktx:${versions.workManager}",
+  ]
+
   repositories {
     google()
+    mavenCentral()
     jcenter()
   }
+
   dependencies {
     classpath "com.android.tools.build:gradle:4.2.0-alpha02"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -17,6 +33,7 @@ buildscript {
 allprojects {
   repositories {
     google()
+    mavenCentral()
     jcenter()
   }
 }

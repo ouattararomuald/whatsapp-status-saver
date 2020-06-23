@@ -1,3 +1,6 @@
 <resources>
   <string name="app_name">Status Saver</string>
+
+  <string name="images_fragment_title">Images</string>
+  <string name="videos_fragment_title">Vidéos</string>
 </resources>
