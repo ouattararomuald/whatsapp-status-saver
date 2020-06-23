@@ -4,19 +4,27 @@ buildscript {
   ext.workManager = '2.3.4'
 
   ext.versions = [
-    'scene': '1.0.4',
+    'groupie': '2.8.0',
     'workManager': '2.3.4',
   ]
 
   ext.deps = [
     'androidx': [
-      'viewpager2': 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
+      'cardview': 'androidx.cardview:cardview:1.0.0',
+      'recyclerview': 'androidx.recyclerview:recyclerview:1.2.0-alpha03',
+      'viewpager2': 'androidx.viewpager2:viewpager2:1.1.0-alpha01',
     ],
+    'groupie': [
+      'core': "com.xwray:groupie:${versions.groupie}",
+      'viewBinding': "com.xwray:groupie-viewbinding:${versions.groupie}"
+    ],
+    'coil': 'io.coil-kt:coil:0.11.0',
     'workManager': "androidx.work:work-runtime-ktx:${versions.workManager}",
   ]
 
   repositories {
     google()
+    maven { url 'https://dl.bintray.com/lisawray/maven' }
     mavenCentral()
     jcenter()
   }
@@ -33,6 +41,7 @@ buildscript {
 allprojects {
   repositories {
     google()
+    maven { url 'https://dl.bintray.com/lisawray/maven' }
     mavenCentral()
     jcenter()
   }
