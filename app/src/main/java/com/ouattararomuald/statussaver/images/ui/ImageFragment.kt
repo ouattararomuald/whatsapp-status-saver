@@ -46,22 +46,16 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
     val view = binding.root
     presenter = ImagePresenter(arguments?.getParcelableArrayList(IMAGES_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
-    return view
-  }
 
-  override fun onResume() {
-    super.onResume()
     groupAdapter.add(section)
     binding.imagesRecyclerView.apply {
       layoutManager = GridLayoutManager(context, 2)
       adapter = groupAdapter
     }
-    presenter.start()
-  }
 
-  override fun onPause() {
-    super.onPause()
-    groupAdapter.clear()
+    presenter.start()
+
+    return view
   }
 
   override fun displayMedias(medias: List<Media>) {

@@ -36,6 +36,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView {
   lateinit var presenter: VideoPresenter
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
   private val section = Section()
+  private val videoItems = mutableListOf<VideoItem>()
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -44,26 +45,23 @@ class VideoFragment : Fragment(), VideoContract.VideoView {
     val view = binding.root
     presenter = VideoPresenter(arguments?.getParcelableArrayList(VideoFragment.VIDEOS_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
-    return view
-  }
 
-  override fun onResume() {
-    super.onResume()
     groupAdapter.add(section)
     binding.imagesRecyclerView.apply {
       layoutManager = GridLayoutManager(context, 2)
       adapter = groupAdapter
     }
-    presenter.start()
-  }
 
-  override fun onPause() {
-    super.onPause()
-    groupAdapter.clear()
+    presenter.start()
+
+    return view
   }
 
   override fun displayMedias(medias: List<Media>) {
-    section.addAll(medias.map { media -> media.toVideoItem() })
+    if (videoItems.isEmpty()) { //FIXME: Verify both lists are different.
+      videoItems.addAll(medias.map { media -> media.toVideoItem() })
+    }
+    section.addAll(videoItems)
   }
 
   private fun Media.toVideoItem(): VideoItem = VideoItem(this.file)

@@ -54,6 +54,8 @@ dependencies {
   implementation deps.androidx.cardview
   implementation deps.androidx.recyclerview
 
+  implementation deps.coroutines.android
+
   implementation deps.coil
 
   implementation deps.groupie.core
