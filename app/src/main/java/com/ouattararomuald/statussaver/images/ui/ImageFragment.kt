@@ -1,8 +1,6 @@
 package com.ouattararomuald.statussaver.images.ui
 
-import android.media.browse.MediaBrowser
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +36,8 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
   lateinit var presenter: ImagePresenter
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
   private val section = Section()
+  private val images = mutableListOf<Media>()
+  private val imageItems = mutableListOf<ImageItem>()
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -53,12 +53,22 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
       adapter = groupAdapter
     }
 
+    groupAdapter.setOnItemClickListener { item, view ->
+      if (item is ImageItem) {
+        FullScreenImageViewerActivity.start(context!!, images)
+      }
+    }
+
     presenter.start()
 
     return view
   }
 
   override fun displayMedias(medias: List<Media>) {
+    if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
+      images.addAll(medias)
+      imageItems.addAll(medias.map { media -> media.toImageItem() })
+    }
     section.addAll(medias.map { media -> media.toImageItem() })
   }
 

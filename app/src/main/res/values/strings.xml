@@ -3,4 +3,7 @@
 
   <string name="images_fragment_title">Images</string>
   <string name="videos_fragment_title">Vidéos</string>
+  <string name="title_activity_fullscreen">FullscreenActivity</string>
+  <string name="dummy_button">Dummy Button</string>
+  <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
