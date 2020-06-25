@@ -1,6 +1,5 @@
 package com.ouattararomuald.statussaver.videos.adapters
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import android.os.Build
@@ -12,12 +11,15 @@ import coil.size.Scale
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ViewVideoBinding
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-
-class VideoItem(private val file: File) : BindableItem<ViewVideoBinding>(), CoroutineScope {
+class VideoItem(val file: File, val position: Int) : BindableItem<ViewVideoBinding>(), CoroutineScope {
 
   private val job = SupervisorJob()
 

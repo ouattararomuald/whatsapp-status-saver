@@ -56,6 +56,9 @@ dependencies {
 
   implementation deps.coroutines.android
 
+  implementation deps.exoplayer.core
+  implementation deps.exoplayer.ui
+
   implementation deps.coil
 
   implementation deps.groupie.core

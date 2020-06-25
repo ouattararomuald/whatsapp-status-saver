@@ -36,6 +36,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView {
   lateinit var presenter: VideoPresenter
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
   private val section = Section()
+  private val videos = mutableListOf<Media>()
   private val videoItems = mutableListOf<VideoItem>()
 
   override fun onCreateView(
@@ -52,6 +53,12 @@ class VideoFragment : Fragment(), VideoContract.VideoView {
       adapter = groupAdapter
     }
 
+    groupAdapter.setOnItemClickListener { item, view ->
+      if (item is VideoItem) {
+        VideoPlayerActivity.start(context!!, videos, item.position)
+      }
+    }
+
     presenter.start()
 
     return view
@@ -59,10 +66,11 @@ class VideoFragment : Fragment(), VideoContract.VideoView {
 
   override fun displayMedias(medias: List<Media>) {
     if (videoItems.isEmpty()) { //FIXME: Verify both lists are different.
-      videoItems.addAll(medias.map { media -> media.toVideoItem() })
+      videos.addAll(medias)
+      videoItems.addAll(medias.mapIndexed { index, media ->  media.toVideoItem(index) })
     }
     section.addAll(videoItems)
   }
 
-  private fun Media.toVideoItem(): VideoItem = VideoItem(this.file)
+  private fun Media.toVideoItem(index: Int): VideoItem = VideoItem(this.file, index)
 }
