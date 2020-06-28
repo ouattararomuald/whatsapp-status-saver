@@ -52,7 +52,7 @@ dependencies {
   implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
   implementation deps.androidx.cardview
-  implementation deps.androidx.recyclerview
+  implementation deps.androidx.recyclerview.core
 
   implementation deps.coroutines.android
 

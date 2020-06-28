@@ -1,35 +1,38 @@
 package com.ouattararomuald.statussaver.images.adapters
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.ThumbnailUtils
 import android.view.View
+import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import coil.api.load
 import coil.size.Scale
+import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ViewImageBinding
 import com.xwray.groupie.viewbinding.BindableItem
-import java.io.File
 
-class ImageItem(private val file: File) : BindableItem<ViewImageBinding>() {
+class ImageItem(val media: Media, val position: Int) : BindableItem<ViewImageBinding>() {
+
+  lateinit var selectorFrameLayout: FrameLayout
+
+  var isSelected = false
+    private set
+
   override fun getLayout(): Int = R.layout.view_image
 
   override fun bind(viewBinding: ViewImageBinding, position: Int) {
-    viewBinding.imageView.load(file) {
+    selectorFrameLayout = viewBinding.selectorFrameLayout
+    viewBinding.imageView.load(media.file) {
       scale(Scale.FILL)
     }
+    selectorFrameLayout.isVisible = isSelected
   }
 
   override fun initializeViewBinding(view: View): ViewImageBinding {
     return ViewImageBinding.bind(view)
   }
 
-  private fun File.getImageThumbnail(): Bitmap {
-    return ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(absolutePath),
-        THUMBNAIL_SIZE, THUMBNAIL_SIZE)
-  }
-
-  companion object {
-    private const val THUMBNAIL_SIZE = 64
+  fun toggleSelectionState() {
+    isSelected = !isSelected
+    selectorFrameLayout.isVisible = isSelected
   }
 }

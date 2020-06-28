@@ -1,6 +1,9 @@
 package com.ouattararomuald.statussaver.images.ui
 
 import android.os.Bundle
+import android.util.SparseArray
+import android.util.SparseBooleanArray
+import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +18,7 @@ import com.ouattararomuald.statussaver.images.presenters.ImagePresenter
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Section
+import java.io.File
 
 class ImageFragment : Fragment(), ImageContract.ImageView {
 
@@ -36,7 +40,8 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
   lateinit var presenter: ImagePresenter
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
   private val section = Section()
-  private val images = mutableListOf<Media>()
+
+  private val selectedMedia: MutableMap<Media, Boolean> = mutableMapOf()
   private val imageItems = mutableListOf<ImageItem>()
 
   override fun onCreateView(
@@ -51,12 +56,25 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
     binding.imagesRecyclerView.apply {
       layoutManager = GridLayoutManager(context, 2)
       adapter = groupAdapter
+      setHasFixedSize(true)
     }
 
     groupAdapter.setOnItemClickListener { item, view ->
       if (item is ImageItem) {
-        FullScreenImageViewerActivity.start(context!!, images)
+        FullScreenImageViewerActivity.start(context!!, imageItems.map { it.media })
       }
+    }
+
+    groupAdapter.setOnItemLongClickListener { item, view ->
+      if (item is ImageItem) {
+        item.toggleSelectionState()
+        if (item.isSelected) {
+          selectedMedia[item.media] = item.isSelected
+        } else {
+          selectedMedia.remove(item.media)
+        }
+      }
+      true
     }
 
     presenter.start()
@@ -66,11 +84,10 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
 
   override fun displayMedias(medias: List<Media>) {
     if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
-      images.addAll(medias)
-      imageItems.addAll(medias.map { media -> media.toImageItem() })
+      imageItems.addAll(medias.mapIndexed { index, media ->  media.toImageItem(index) })
     }
-    section.addAll(medias.map { media -> media.toImageItem() })
+    section.addAll(imageItems)
   }
 
-  private fun Media.toImageItem(): ImageItem = ImageItem(this.file)
+  private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position)
 }

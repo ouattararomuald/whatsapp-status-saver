@@ -51,6 +51,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView {
     binding.imagesRecyclerView.apply {
       layoutManager = GridLayoutManager(context, 2)
       adapter = groupAdapter
+      setHasFixedSize(true)
     }
 
     groupAdapter.setOnItemClickListener { item, view ->
