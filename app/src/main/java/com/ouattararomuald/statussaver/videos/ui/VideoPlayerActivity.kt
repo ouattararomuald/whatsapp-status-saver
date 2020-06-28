@@ -67,12 +67,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     val view = binding.root
     setContentView(view)
 
-    if (Build.VERSION.SDK_INT >= 30) {
-      window.setDecorFitsSystemWindows(false)
-    } else {
-      window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-          WindowManager.LayoutParams.FLAG_FULLSCREEN)
-    }
+    enableFullScreen()
 
     if (intent.extras?.containsKey(VIDEO_KEY) == true) {
       selectedVideoIndex = intent.getIntExtra(SELECTED_VIDEO_KEY, 0)
@@ -82,6 +77,15 @@ class VideoPlayerActivity : AppCompatActivity() {
     supportActionBar?.apply {
       setDisplayHomeAsUpEnabled(true)
       hide()
+    }
+  }
+
+  private fun enableFullScreen() {
+    if (Build.VERSION.SDK_INT >= 30) {
+      window.setDecorFitsSystemWindows(false)
+    } else {
+      window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+          WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
   }
 

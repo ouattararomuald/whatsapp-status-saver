@@ -2,7 +2,9 @@ package com.ouattararomuald.statussaver.images.ui
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.databinding.ActivityFullscreenImageViewerBinding
@@ -30,10 +32,27 @@ class FullScreenImageViewerActivity : AppCompatActivity() {
     binding = ActivityFullscreenImageViewerBinding.inflate(layoutInflater)
     val view = binding.root
     setContentView(view)
+
+    enableFullScreen()
+
     if (intent.extras?.containsKey(IMAGES_KEY) == true) {
       images = intent.getParcelableArrayListExtra<Media>(IMAGES_KEY)!!.toList()
     }
 
     binding.pager.adapter = FullScreenImagePager(this, images)
+
+    supportActionBar?.apply {
+      setDisplayHomeAsUpEnabled(true)
+      hide()
+    }
+  }
+
+  private fun enableFullScreen() {
+    if (Build.VERSION.SDK_INT >= 30) {
+      window.setDecorFitsSystemWindows(false)
+    } else {
+      window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+          WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    }
   }
 }
