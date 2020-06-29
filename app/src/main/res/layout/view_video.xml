@@ -38,6 +38,22 @@
           android:scaleType="centerCrop"
           android:tint="@color/white"
           app:srcCompat="@drawable/ic_play_circle_outline" />
+
+      <FrameLayout
+          android:id="@+id/selectorFrameLayout"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@color/selection_background"
+          android:visibility="gone">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/checkImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_check"
+            />
+      </FrameLayout>
     </FrameLayout>
   </androidx.cardview.widget.CardView>
 

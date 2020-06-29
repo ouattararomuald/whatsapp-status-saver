@@ -12,7 +12,7 @@ import com.xwray.groupie.viewbinding.BindableItem
 
 class ImageItem(val media: Media, val position: Int) : BindableItem<ViewImageBinding>() {
 
-  lateinit var selectorFrameLayout: FrameLayout
+  private lateinit var selectorFrameLayout: FrameLayout
 
   var isSelected = false
     private set

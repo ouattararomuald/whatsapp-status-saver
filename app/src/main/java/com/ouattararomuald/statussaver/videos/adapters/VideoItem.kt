@@ -6,8 +6,11 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
 import android.view.View
+import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import coil.api.load
 import coil.size.Scale
+import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ViewVideoBinding
 import com.xwray.groupie.viewbinding.BindableItem
@@ -19,25 +22,29 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class VideoItem(val file: File, val position: Int) : BindableItem<ViewVideoBinding>(), CoroutineScope {
+class VideoItem(val media: Media, val position: Int) : BindableItem<ViewVideoBinding>(), CoroutineScope {
 
   private val job = SupervisorJob()
 
   override val coroutineContext: CoroutineContext
     get() = job + Dispatchers.Main
 
+  private lateinit var selectorFrameLayout: FrameLayout
+
+  var isSelected = false
+    private set
+
   override fun getLayout(): Int = R.layout.view_video
 
   override fun bind(viewBinding: ViewVideoBinding, position: Int) {
+    selectorFrameLayout = viewBinding.selectorFrameLayout
     launch {
       withContext(Dispatchers.IO) {
-        val bitmap = file.getVideoThumbnail()
+        val bitmap = media.file.getVideoThumbnail()
         if (bitmap != null) {
-          //withContext(Dispatchers.Main) {
           viewBinding.imageView.load(bitmap) {
             scale(Scale.FILL)
           }
-          //}
         }
       }
     }
@@ -53,6 +60,11 @@ class VideoItem(val file: File, val position: Int) : BindableItem<ViewVideoBindi
     } else {
       ThumbnailUtils.createVideoThumbnail(this.absolutePath, MediaStore.Images.Thumbnails.MINI_KIND)
     }
+  }
+
+  fun toggleSelectionState() {
+    isSelected = !isSelected
+    selectorFrameLayout.isVisible = isSelected
   }
 
   companion object {

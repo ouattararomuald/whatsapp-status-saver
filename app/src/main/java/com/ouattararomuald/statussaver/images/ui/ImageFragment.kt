@@ -1,9 +1,6 @@
 package com.ouattararomuald.statussaver.images.ui
 
 import android.os.Bundle
-import android.util.SparseArray
-import android.util.SparseBooleanArray
-import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +8,17 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.databinding.FragmentImagesBinding
+import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.images.adapters.ImageItem
 import com.ouattararomuald.statussaver.images.presenters.ImageContract
 import com.ouattararomuald.statussaver.images.presenters.ImagePresenter
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Section
-import java.io.File
 
-class ImageFragment : Fragment(), ImageContract.ImageView {
+class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
 
   companion object {
     private const val IMAGES_KEY = "images_key"
@@ -41,8 +39,10 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
   private val section = Section()
 
-  private val selectedMedia: MutableMap<Media, Boolean> = mutableMapOf()
+  private val selectedMedia: MutableMap<Media, ImageItem> = mutableMapOf()
   private val imageItems = mutableListOf<ImageItem>()
+
+  var homeCommand: HomeContract.HomeCommand? = null
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -69,7 +69,7 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
       if (item is ImageItem) {
         item.toggleSelectionState()
         if (item.isSelected) {
-          selectedMedia[item.media] = item.isSelected
+          selectedMedia[item.media] = item
         } else {
           selectedMedia.remove(item.media)
         }
@@ -82,9 +82,25 @@ class ImageFragment : Fragment(), ImageContract.ImageView {
     return view
   }
 
+  override fun onResume() {
+    super.onResume()
+    homeCommand?.setCurrentView(this)
+  }
+
+  override fun onClearSelection() {
+    selectedMedia.forEach { (_, imageItem) ->
+      imageItem.toggleSelectionState()
+    }
+    selectedMedia.clear()
+  }
+
+  override fun onShareClicked() {
+    homeCommand?.shareImages(selectedMedia.keys.toList())
+  }
+
   override fun displayMedias(medias: List<Media>) {
     if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
-      imageItems.addAll(medias.mapIndexed { index, media ->  media.toImageItem(index) })
+      imageItems.addAll(medias.mapIndexed { index, media -> media.toImageItem(index) })
     }
     section.addAll(imageItems)
   }
