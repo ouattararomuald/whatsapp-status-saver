@@ -91,7 +91,6 @@ class StatusFinder(private val context: Context) {
 
   private fun sortMedia(medias: List<Media>): List<Media> {
     return medias.sortedByDescending { media -> media.file.lastModified() }
-        .sortedBy { media -> media.file.name }
   }
 
   private enum class FinderState {
