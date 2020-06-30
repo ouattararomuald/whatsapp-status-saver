@@ -63,11 +63,19 @@ class HomePresenter(
     this.currentFragment = fragment
   }
 
+  override fun onMediaSelected() {
+    view.showClearOptionMenu()
+  }
+
+  override fun onSelectionCleared() {
+    view.hideClearOptionMenu()
+  }
+
   override fun shareImages(medias: List<Media>) {
     if (medias.isEmpty()) {
 
     } else {
-      view.navigateToActivity(getMediasShareIntent(medias, IMAGE_MIME_TYPE))
+      view.openChooserForIntent(getMediasShareIntent(medias, IMAGE_MIME_TYPE))
     }
   }
 
@@ -75,14 +83,14 @@ class HomePresenter(
     if (medias.isEmpty()) {
 
     } else {
-      view.navigateToActivity(getMediasShareIntent(medias, VIDEO_MIME_TYPE))
+      view.openChooserForIntent(getMediasShareIntent(medias, VIDEO_MIME_TYPE))
     }
   }
 
   private fun getMediasShareIntent(medias: List<Media>, mimeType: String): Intent {
     val files = mutableListOf<Uri>()
     val shareIntent: Intent = Intent().apply {
-      action = Intent.ACTION_SEND_MULTIPLE
+      action = if(medias.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND
       putExtra(Intent.EXTRA_SUBJECT, context.resources.getText(R.string.send_title))
       type = mimeType
 
@@ -99,10 +107,15 @@ class HomePresenter(
       if (mimeType == VIDEO_MIME_TYPE) {
         addCategory(Intent.CATEGORY_OPENABLE)
       }
-      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-      putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(files))
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      if(medias.size > 1) {
+        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(files))
+      } else {
+        putExtra(Intent.EXTRA_STREAM, files.first())
+      }
     }
-    return Intent.createChooser(shareIntent, context.resources.getText(R.string.send_to))
+
+    return shareIntent
   }
 
   companion object {

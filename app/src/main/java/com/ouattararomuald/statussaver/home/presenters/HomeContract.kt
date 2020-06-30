@@ -13,7 +13,11 @@ interface HomeContract {
 
     fun displayPages(pages: Array<Page>)
 
-    fun navigateToActivity(intent: Intent)
+    fun openChooserForIntent(shareIntent: Intent)
+
+    fun hideClearOptionMenu()
+
+    fun showClearOptionMenu()
   }
 
   interface HomePresenter {
@@ -26,6 +30,10 @@ interface HomeContract {
 
   interface HomeCommand {
     fun setCurrentView(fragment: Fragment)
+
+    fun onMediaSelected()
+
+    fun onSelectionCleared()
 
     fun shareImages(medias: List<Media>)
 

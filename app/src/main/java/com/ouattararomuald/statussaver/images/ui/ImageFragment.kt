@@ -74,6 +74,13 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
           selectedMedia.remove(item.media)
         }
       }
+
+      if (selectedMedia.isEmpty()) {
+        homeCommand?.onSelectionCleared()
+      } else {
+        homeCommand?.onMediaSelected()
+      }
+
       true
     }
 
@@ -85,6 +92,12 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
   override fun onResume() {
     super.onResume()
     homeCommand?.setCurrentView(this)
+    onClearSelection()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    onClearSelection()
   }
 
   override fun onClearSelection() {
@@ -92,6 +105,7 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
       imageItem.toggleSelectionState()
     }
     selectedMedia.clear()
+    homeCommand?.onSelectionCleared()
   }
 
   override fun onShareClicked() {

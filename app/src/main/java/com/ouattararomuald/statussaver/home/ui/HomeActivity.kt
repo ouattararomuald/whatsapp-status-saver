@@ -8,7 +8,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
-import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ActivityHomeBinding
 import com.ouattararomuald.statussaver.home.adapters.HomePagesAdapter
@@ -24,6 +23,8 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
 
   lateinit var presenter: HomeContract.HomePresenter
 
+  private var clearOptionMenuItem: MenuItem? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -37,6 +38,9 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     val inflater: MenuInflater = menuInflater
     inflater.inflate(R.menu.home, menu)
+    if (menu != null) {
+      clearOptionMenuItem = menu.getItem(0)
+    }
     return true
   }
 
@@ -64,7 +68,15 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
     tabLayoutMediator?.attach()
   }
 
-  override fun navigateToActivity(intent: Intent) {
-    startActivity(intent)
+  override fun openChooserForIntent(shareIntent: Intent) {
+    startActivity(Intent.createChooser(shareIntent, resources.getText(R.string.send_to)))
+  }
+
+  override fun hideClearOptionMenu() {
+    clearOptionMenuItem?.isVisible = false
+  }
+
+  override fun showClearOptionMenu() {
+    clearOptionMenuItem?.isVisible = true
   }
 }

@@ -74,6 +74,13 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable {
           selectedMedia.remove(item.media)
         }
       }
+
+      if (selectedMedia.isEmpty()) {
+        homeCommand?.onSelectionCleared()
+      } else {
+        homeCommand?.onMediaSelected()
+      }
+
       true
     }
 
@@ -87,11 +94,17 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable {
     homeCommand?.setCurrentView(this)
   }
 
+  override fun onPause() {
+    super.onPause()
+    onClearSelection()
+  }
+
   override fun onClearSelection() {
     selectedMedia.forEach { (_, videoItem) ->
       videoItem.toggleSelectionState()
     }
     selectedMedia.clear()
+    homeCommand?.onSelectionCleared()
   }
 
   override fun onShareClicked() {
