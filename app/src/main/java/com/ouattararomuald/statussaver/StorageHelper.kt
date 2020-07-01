@@ -9,6 +9,7 @@ class StorageHelper(private val context: Context) {
 
   companion object {
     const val WHATSAPP_STATUSES_FOLDER_PATH = "WhatsApp/Media/.Statuses"
+    const val WHATSAPP_BUSINESS_STATUSES_FOLDER_PATH = "WhatsApp Business/Media/.Statuses"
     const val ANDROID = "Android"
 
     /** Checks if a volume containing external storage is available for read and write. */
@@ -28,17 +29,17 @@ class StorageHelper(private val context: Context) {
       return null
     }
 
-    val appStorageRoot = context.getExternalFilesDir(null)
+    val appStorageRoot = Environment.getExternalStorageDirectory() //context.getExternalFilesDir(null)
     if (appStorageRoot != null) {
-      val path = appStorageRoot.path
+      /*val path = appStorageRoot.path
       if (!path.contains(ANDROID)) {
         return null
       }
-      val externalStorageRootPath = File(path.substring(0 until path.indexOf(ANDROID)))
+      val externalStorageRootPath = path.substring(0 until path.indexOf(ANDROID))*/
 
-      val whatsAppStatusFolder = File( "${externalStorageRootPath}/$WHATSAPP_STATUSES_FOLDER_PATH")
-      if (whatsAppStatusFolder.exists()) {
-        return whatsAppStatusFolder.path
+      val whatsAppStatusFolder = File( "${appStorageRoot}/$WHATSAPP_STATUSES_FOLDER_PATH")
+      if (whatsAppStatusFolder.exists() && whatsAppStatusFolder.isDirectory) {
+        return whatsAppStatusFolder.absolutePath
       }
     }
 

@@ -21,7 +21,9 @@ interface HomeContract {
   }
 
   interface HomePresenter {
-    fun start()
+    //fun displayPages()
+
+    fun discoverStatuses()
 
     fun onClearOptionMenuItemClicked()
 

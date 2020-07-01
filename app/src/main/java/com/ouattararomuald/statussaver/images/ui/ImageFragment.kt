@@ -59,13 +59,13 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
       setHasFixedSize(true)
     }
 
-    groupAdapter.setOnItemClickListener { item, view ->
+    groupAdapter.setOnItemClickListener { item, _ ->
       if (item is ImageItem) {
-        FullScreenImageViewerActivity.start(context!!, imageItems.map { it.media })
+        FullScreenImageViewerActivity.start(context!!, imageItems.map { it.media }, item.position)
       }
     }
 
-    groupAdapter.setOnItemLongClickListener { item, view ->
+    groupAdapter.setOnItemLongClickListener { item, _ ->
       if (item is ImageItem) {
         item.toggleSelectionState()
         if (item.isSelected) {

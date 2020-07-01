@@ -1,11 +1,13 @@
 package com.ouattararomuald.statussaver.home.ui
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ouattararomuald.statussaver.R
@@ -14,8 +16,16 @@ import com.ouattararomuald.statussaver.home.adapters.HomePagesAdapter
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.home.presenters.HomePresenter
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 
-class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
+class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
+  EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
+
+  companion object {
+    private const val RC_READ_EXTERNAL_STORAGE = 0xcafe
+  }
 
   private lateinit var binding: ActivityHomeBinding
 
@@ -32,7 +42,56 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
     setContentView(view)
 
     presenter = HomePresenter(this, this)
-    presenter.start()
+    requestPermissions()
+  }
+
+  override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+  ) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+  }
+
+  override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+    presenter.discoverStatuses()
+  }
+
+  override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+    if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+      AppSettingsDialog.Builder(this).build().show()
+    }
+  }
+
+  override fun onRationaleAccepted(requestCode: Int) {
+  }
+
+  override fun onRationaleDenied(requestCode: Int) {
+    finish()
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+      // Do something after user returned from app settings screen, like showing a Toast.
+      Toast.makeText(this, "R.string.returned_from_app_settings_to_activity", Toast.LENGTH_SHORT)
+        .show()
+    }
+  }
+
+  @AfterPermissionGranted(RC_READ_EXTERNAL_STORAGE)
+  private fun requestPermissions() {
+    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    if (EasyPermissions.hasPermissions(this, *permissions)) {
+      presenter.discoverStatuses()
+    } else {
+      EasyPermissions.requestPermissions(
+        this, getString(R.string.read_external_storage_rationale),
+        RC_READ_EXTERNAL_STORAGE, *permissions
+      )
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {

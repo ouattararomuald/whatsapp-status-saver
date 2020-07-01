@@ -31,6 +31,7 @@ buildscript {
       'viewBinding': "com.xwray:groupie-viewbinding:${versions.groupie}"
     ],
     'coil': 'io.coil-kt:coil:0.11.0',
+    'easypermissions': 'pub.devrel:easypermissions:3.0.0',
     'workManager': "androidx.work:work-runtime-ktx:${versions.workManager}",
   ]
 
@@ -43,7 +44,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.android.tools.build:gradle:4.2.0-alpha02"
+    classpath 'com.android.tools.build:gradle:4.2.0-alpha03'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
     // NOTE: Do not place your application dependencies here; they belong

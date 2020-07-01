@@ -9,15 +9,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.databinding.ActivityFullscreenImageViewerBinding
 import com.ouattararomuald.statussaver.images.adapters.FullScreenImagePager
+import com.ouattararomuald.statussaver.videos.ui.VideoPlayerActivity
 
 class FullScreenImageViewerActivity : AppCompatActivity() {
 
   companion object {
+    private const val SELECTED_IMAGE_INDEX_KEY = "selected_image_index_key"
     private const val IMAGES_KEY = "images_key"
 
-    fun start(context: Context, images: List<Media>) {
+    fun start(context: Context, images: List<Media>, clickedItemPosition: Int) {
       val intent = Intent(context, FullScreenImageViewerActivity::class.java)
       intent.apply {
+        putExtra(SELECTED_IMAGE_INDEX_KEY, clickedItemPosition)
         putParcelableArrayListExtra(IMAGES_KEY, ArrayList(images))
       }
       context.startActivity(intent)
@@ -26,6 +29,7 @@ class FullScreenImageViewerActivity : AppCompatActivity() {
 
   private lateinit var binding: ActivityFullscreenImageViewerBinding
   private lateinit var images: List<Media>
+  private var selectedImageIndex = 0
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -36,10 +40,15 @@ class FullScreenImageViewerActivity : AppCompatActivity() {
     enableFullScreen()
 
     if (intent.extras?.containsKey(IMAGES_KEY) == true) {
-      images = intent.getParcelableArrayListExtra<Media>(IMAGES_KEY)!!.toList()
+      images = intent.getParcelableArrayListExtra(IMAGES_KEY)!!
+    }
+
+    if (intent.extras?.containsKey(SELECTED_IMAGE_INDEX_KEY) == true) {
+      selectedImageIndex = intent.getIntExtra(SELECTED_IMAGE_INDEX_KEY, 0)
     }
 
     binding.pager.adapter = FullScreenImagePager(this, images)
+    binding.pager.currentItem = selectedImageIndex
 
     supportActionBar?.apply {
       setDisplayHomeAsUpEnabled(true)

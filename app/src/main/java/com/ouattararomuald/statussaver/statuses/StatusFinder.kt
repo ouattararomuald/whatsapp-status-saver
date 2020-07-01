@@ -6,6 +6,7 @@ import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.MediaType
 import com.ouattararomuald.statussaver.StorageHelper
 import java.io.File
+import java.lang.IllegalStateException
 
 /** Helper to find all WhatsApp statuses that have been published. */
 class StatusFinder(private val context: Context) {

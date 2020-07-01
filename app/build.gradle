@@ -61,6 +61,8 @@ dependencies {
 
   implementation deps.coil
 
+  implementation deps.easypermissions
+
   implementation deps.groupie.core
   implementation deps.groupie.viewBinding
   implementation deps.androidx.viewpager2

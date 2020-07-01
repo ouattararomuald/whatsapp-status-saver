@@ -11,4 +11,5 @@
     <string name="share_menu_item">Share</string>
     <string name="send_to">Send to</string>
     <string name="send_title">WhatsApp Statuses images</string>
+    <string name="read_external_storage_rationale">Status saver is unable to work without access to your store. Please enable access so we can save/discover statuses.</string>
 </resources>

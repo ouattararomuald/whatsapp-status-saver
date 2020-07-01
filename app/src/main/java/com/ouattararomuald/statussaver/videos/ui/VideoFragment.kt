@@ -59,13 +59,13 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable {
       setHasFixedSize(true)
     }
 
-    groupAdapter.setOnItemClickListener { item, view ->
+    groupAdapter.setOnItemClickListener { item, _ ->
       if (item is VideoItem) {
         VideoPlayerActivity.start(context!!, videoItems.map { it.media }, item.position)
       }
     }
 
-    groupAdapter.setOnItemLongClickListener { item, view ->
+    groupAdapter.setOnItemLongClickListener { item, _ ->
       if (item is VideoItem) {
         item.toggleSelectionState()
         if (item.isSelected) {

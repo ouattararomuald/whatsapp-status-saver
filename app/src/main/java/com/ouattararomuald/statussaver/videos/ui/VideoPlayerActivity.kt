@@ -25,7 +25,7 @@ import com.ouattararomuald.statussaver.databinding.ActivityVideoPlayerBinding
 class VideoPlayerActivity : AppCompatActivity() {
 
   companion object {
-    private const val SELECTED_VIDEO_KEY = "selected_video_key"
+    private const val SELECTED_VIDEO_INDEX_KEY = "selected_video_index_key"
     private const val VIDEO_KEY = "video_key"
 
     /**
@@ -43,7 +43,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     fun start(context: Context, videos: List<Media>, clickedItemPosition: Int) {
       val intent = Intent(context, VideoPlayerActivity::class.java)
       intent.apply {
-        putExtra(SELECTED_VIDEO_KEY, clickedItemPosition)
+        putExtra(SELECTED_VIDEO_INDEX_KEY, clickedItemPosition)
         putParcelableArrayListExtra(VIDEO_KEY, ArrayList(videos))
       }
       context.startActivity(intent)
@@ -70,8 +70,10 @@ class VideoPlayerActivity : AppCompatActivity() {
     enableFullScreen()
 
     if (intent.extras?.containsKey(VIDEO_KEY) == true) {
-      selectedVideoIndex = intent.getIntExtra(SELECTED_VIDEO_KEY, 0)
       videos = intent.getParcelableArrayListExtra(VIDEO_KEY)!!
+    }
+    if (intent.extras?.containsKey(SELECTED_VIDEO_INDEX_KEY) == true) {
+      selectedVideoIndex = intent.getIntExtra(SELECTED_VIDEO_INDEX_KEY, 0)
     }
 
     supportActionBar?.apply {

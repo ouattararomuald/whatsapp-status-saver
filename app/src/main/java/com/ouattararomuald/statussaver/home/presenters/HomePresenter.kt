@@ -24,9 +24,7 @@ class HomePresenter(
 
   private var currentFragment: Fragment? = null
 
-  override fun start() {
-    statusFinder.findStatuses()
-    statusesSnapshot = statusFinder.getSnapshot()
+  private fun initializedPages() {
     pages = arrayOf(
         Page(title = context.getString(R.string.images_fragment_title),
             fragment = ImageFragment.newInstance(statusesSnapshot.images)),
@@ -40,6 +38,14 @@ class HomePresenter(
         page.fragment.homeCommand = this
       }
     }
+  }
+
+  override fun discoverStatuses() {
+    statusFinder.findStatuses()
+    statusesSnapshot = statusFinder.getSnapshot()
+
+    initializedPages()
+
     view.displayPages(pages)
   }
 
