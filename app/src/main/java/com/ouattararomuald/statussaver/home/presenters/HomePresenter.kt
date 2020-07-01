@@ -7,6 +7,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
+import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.images.ui.ImageFragment
 import com.ouattararomuald.statussaver.statuses.StatusFinder
@@ -20,16 +21,20 @@ class HomePresenter(
 
   private lateinit var pages: Array<Page>
   private val statusFinder = StatusFinder(context)
-  private lateinit var statusesSnapshot: StatusesSnapshot
+  private var statusesSnapshot: StatusesSnapshot? = null
 
   private var currentFragment: Fragment? = null
 
   private fun initializedPages() {
     pages = arrayOf(
-        Page(title = context.getString(R.string.images_fragment_title),
-            fragment = ImageFragment.newInstance(statusesSnapshot.images)),
-        Page(title = context.getString(R.string.videos_fragment_title),
-            fragment = VideoFragment.newInstance(statusesSnapshot.videos))
+      Page(
+        title = context.getString(R.string.images_fragment_title),
+        fragment = ImageFragment.newInstance(statusesSnapshot?.images ?: emptyList())
+      ),
+      Page(
+        title = context.getString(R.string.videos_fragment_title),
+        fragment = VideoFragment.newInstance(statusesSnapshot?.videos ?: emptyList())
+      )
     )
     pages.forEach { page ->
       if (page.fragment is ImageFragment) {
@@ -47,6 +52,29 @@ class HomePresenter(
     initializedPages()
 
     view.displayPages(pages)
+  }
+
+  override fun refreshData() {
+    statusFinder.findStatuses()
+    statusesSnapshot = statusFinder.getSnapshot()
+
+    pages.forEach { page ->
+      val medias = when (page.fragment) {
+        is ImageFragment -> {
+          statusesSnapshot?.images ?: emptyList()
+        }
+        is VideoFragment -> {
+          statusesSnapshot?.videos ?: emptyList()
+        }
+        else -> {
+          emptyList()
+        }
+      }
+
+      if (page.fragment is Updatable) {
+        page.fragment.onUpdateData(medias)
+      }
+    }
   }
 
   override fun onClearOptionMenuItemClicked() {
@@ -96,16 +124,16 @@ class HomePresenter(
   private fun getMediasShareIntent(medias: List<Media>, mimeType: String): Intent {
     val files = mutableListOf<Uri>()
     val shareIntent: Intent = Intent().apply {
-      action = if(medias.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND
+      action = if (medias.size > 1) Intent.ACTION_SEND_MULTIPLE else Intent.ACTION_SEND
       putExtra(Intent.EXTRA_SUBJECT, context.resources.getText(R.string.send_title))
       type = mimeType
 
       medias.forEach { media ->
         val authority = "${context.applicationContext.packageName}.fileprovider"
         val uri = FileProvider.getUriForFile(
-            context,
-            authority,
-            media.file
+          context,
+          authority,
+          media.file
         )
         files.add(uri)
       }
@@ -114,7 +142,7 @@ class HomePresenter(
         addCategory(Intent.CATEGORY_OPENABLE)
       }
       addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-      if(medias.size > 1) {
+      if (medias.size > 1) {
         putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(files))
       } else {
         putExtra(Intent.EXTRA_STREAM, files.first())

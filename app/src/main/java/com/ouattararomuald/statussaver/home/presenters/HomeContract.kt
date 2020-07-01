@@ -21,7 +21,7 @@ interface HomeContract {
   }
 
   interface HomePresenter {
-    //fun displayPages()
+    fun refreshData()
 
     fun discoverStatuses()
 

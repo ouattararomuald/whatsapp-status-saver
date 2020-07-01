@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
+import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.databinding.FragmentImagesBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.images.adapters.ImageItem
@@ -18,7 +19,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Section
 
-class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
+class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable {
 
   companion object {
     private const val IMAGES_KEY = "images_key"
@@ -117,6 +118,12 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable {
       imageItems.addAll(medias.mapIndexed { index, media -> media.toImageItem(index) })
     }
     section.addAll(imageItems)
+  }
+
+  override fun onUpdateData(medias: List<Media>) {
+    imageItems.clear()
+    section.clear()
+    displayMedias(medias)
   }
 
   private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position)

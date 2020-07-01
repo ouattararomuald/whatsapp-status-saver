@@ -113,6 +113,10 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
         presenter.onShareOptionMenuItemClicked()
         true
       }
+      R.id.refresh_item -> {
+        presenter.refreshData()
+        true
+      }
       else -> super.onOptionsItemSelected(item)
     }
   }

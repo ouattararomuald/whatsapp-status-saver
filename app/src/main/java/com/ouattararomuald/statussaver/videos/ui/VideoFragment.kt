@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
+import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.databinding.FragmentVideosBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.videos.adapters.VideoItem
@@ -18,7 +19,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Section
 
-class VideoFragment : Fragment(), VideoContract.VideoView, Shareable {
+class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable {
 
   companion object {
     private const val VIDEOS_KEY = "videos_key"
@@ -116,6 +117,12 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable {
       videoItems.addAll(medias.mapIndexed { index, media ->  media.toVideoItem(index) })
     }
     section.addAll(videoItems)
+  }
+
+  override fun onUpdateData(medias: List<Media>) {
+    videoItems.clear()
+    section.clear()
+    displayMedias(medias)
   }
 
   private fun Media.toVideoItem(index: Int): VideoItem = VideoItem(this, index)
