@@ -1,14 +1,16 @@
 package com.ouattararomuald.statussaver.home.ui
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ActivityHomeBinding
@@ -16,15 +18,11 @@ import com.ouattararomuald.statussaver.home.adapters.HomePagesAdapter
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.home.presenters.HomePresenter
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.AppSettingsDialog
-import pub.devrel.easypermissions.EasyPermissions
 
-class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
-  EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
+class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
 
   companion object {
-    private const val RC_READ_EXTERNAL_STORAGE = 0xcafe
+    private const val RC_MANAGE_ALL_FILES_ACCESS = 0xface
   }
 
   private lateinit var binding: ActivityHomeBinding
@@ -41,56 +39,52 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
     val view = binding.root
     setContentView(view)
 
+    binding.authorizeButton.setOnClickListener {
+      requestPermissions()
+    }
+
     presenter = HomePresenter(this, this)
-    requestPermissions()
+
+    displayViewBasedOnAuthorizations()
   }
 
-  override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<out String>,
-    grantResults: IntArray
-  ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-  }
-
-  override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-    presenter.discoverStatuses()
-  }
-
-  override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-    if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-      AppSettingsDialog.Builder(this).build().show()
+  private fun displayViewBasedOnAuthorizations() {
+    if (hasRequiredPermissions()) {
+      hideAuthorizationViews()
+      presenter.discoverStatuses()
+    } else {
+      showAuthorizationViews()
     }
   }
 
-  override fun onRationaleAccepted(requestCode: Int) {
+  private fun showAuthorizationViews() {
+    binding.tabLayout.isVisible = false
+    binding.pager.isVisible = false
+    binding.authorizationTextView.isVisible = true
+    binding.authorizeButton.isVisible = true
   }
 
-  override fun onRationaleDenied(requestCode: Int) {
-    finish()
+  private fun hideAuthorizationViews() {
+    binding.tabLayout.isVisible = true
+    binding.pager.isVisible = true
+    binding.authorizationTextView.isVisible = false
+    binding.authorizeButton.isVisible = false
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
 
-    if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
-      // Do something after user returned from app settings screen, like showing a Toast.
-      Toast.makeText(this, "R.string.returned_from_app_settings_to_activity", Toast.LENGTH_SHORT)
-        .show()
+    if (requestCode == RC_MANAGE_ALL_FILES_ACCESS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      displayViewBasedOnAuthorizations()
     }
   }
 
-  @AfterPermissionGranted(RC_READ_EXTERNAL_STORAGE)
+  private fun hasRequiredPermissions(): Boolean = Environment.isExternalStorageManager()
+
   private fun requestPermissions() {
-    val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-    if (EasyPermissions.hasPermissions(this, *permissions)) {
-      presenter.discoverStatuses()
-    } else {
-      EasyPermissions.requestPermissions(
-        this, getString(R.string.read_external_storage_rationale),
-        RC_READ_EXTERNAL_STORAGE, *permissions
-      )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+      startActivityForResult(intent, RC_MANAGE_ALL_FILES_ACCESS)
     }
   }
 

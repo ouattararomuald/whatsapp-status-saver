@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -12,21 +11,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.StatusSaver">
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.ouattararomuald.statussaver.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
-        </provider>
-
-
-        <activity
-            android:name=".videos.ui.VideoPlayerActivity" />
-        <activity android:name=".images.ui.FullScreenImageViewerActivity" />
         <activity android:name=".home.ui.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
