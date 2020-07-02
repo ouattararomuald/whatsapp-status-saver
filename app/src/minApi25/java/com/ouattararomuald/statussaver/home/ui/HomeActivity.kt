@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ouattararomuald.statussaver.R
@@ -21,7 +22,7 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
 class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
-    EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
+  EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
 
   companion object {
     private const val RC_READ_EXTERNAL_STORAGE = 0xcafe
@@ -36,6 +37,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
   private var clearOptionMenuItem: MenuItem? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
     super.onCreate(savedInstanceState)
     binding = ActivityHomeBinding.inflate(layoutInflater)
     val view = binding.root
@@ -112,8 +114,8 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
 
   private fun hasRequiredPermissions(): Boolean {
     val permissions = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
+      Manifest.permission.WRITE_EXTERNAL_STORAGE,
+      Manifest.permission.READ_EXTERNAL_STORAGE
     )
     return EasyPermissions.hasPermissions(this, *permissions)
   }
@@ -121,15 +123,15 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
   @AfterPermissionGranted(RC_READ_EXTERNAL_STORAGE)
   private fun requestPermissions() {
     val permissions = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
+      Manifest.permission.WRITE_EXTERNAL_STORAGE,
+      Manifest.permission.READ_EXTERNAL_STORAGE
     )
     if (EasyPermissions.hasPermissions(this, *permissions)) {
       presenter.discoverStatuses()
     } else {
       EasyPermissions.requestPermissions(
-          this, getString(R.string.read_external_storage_rationale),
-          RC_READ_EXTERNAL_STORAGE, *permissions
+        this, getString(R.string.read_external_storage_rationale),
+        RC_READ_EXTERNAL_STORAGE, *permissions
       )
     }
   }
