@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.ouattararomuald.statussaver.BuildConfig
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Updatable
@@ -107,7 +108,7 @@ class HomePresenter(
 
   override fun shareImages(medias: List<Media>) {
     if (medias.isEmpty()) {
-
+      view.openChooserForIntent(getShareAppIntent())
     } else {
       view.openChooserForIntent(getMediasShareIntent(medias, IMAGE_MIME_TYPE))
     }
@@ -115,10 +116,21 @@ class HomePresenter(
 
   override fun shareVideos(medias: List<Media>) {
     if (medias.isEmpty()) {
-
+      view.openChooserForIntent(getShareAppIntent())
     } else {
       view.openChooserForIntent(getMediasShareIntent(medias, VIDEO_MIME_TYPE))
     }
+  }
+
+  private fun getShareAppIntent(): Intent {
+    val sendIntent: Intent = Intent().apply {
+      action = Intent.ACTION_SEND
+      putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.share_app_title))
+      putExtra(Intent.EXTRA_TEXT, context.resources.getString(R.string.share_app_message, "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"))
+      type = "text/plain"
+    }
+
+    return Intent.createChooser(sendIntent, context.resources.getString(R.string.share_app_title))
   }
 
   private fun getMediasShareIntent(medias: List<Media>, mimeType: String): Intent {
