@@ -15,7 +15,7 @@
         android:theme="@style/Theme.StatusSaver">
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.ouattararomuald.statussaver.fileprovider"
+            android:authorities="${fileProvider}"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

@@ -17,4 +17,10 @@
         android:title="@string/refresh_menu_item"
         app:showAsAction="never"
         />
+    <item android:id="@+id/toggle_theme_item"
+        android:icon="@drawable/ic_paint"
+        android:title="@string/switch_theme"
+        app:showAsAction="never"
+        android:visible="false"
+        />
 </menu>

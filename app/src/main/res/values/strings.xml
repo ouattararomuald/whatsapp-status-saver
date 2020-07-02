@@ -16,4 +16,5 @@
     <string name="authorize_button_label">Authorize</string>
     <string name="share_app_message">Try this Awesome App \'Status Saver\' which helps you save WhatsApp Statuses.\n\n%s</string>
     <string name="share_app_title">Share Status Saver App</string>
+  <string name="switch_theme">Switch theme</string>
 </resources>

@@ -6,7 +6,6 @@ import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.MediaType
 import com.ouattararomuald.statussaver.StorageHelper
 import java.io.File
-import java.lang.IllegalStateException
 
 /** Helper to find all WhatsApp statuses that have been published. */
 class StatusFinder(private val context: Context) {
@@ -20,19 +19,33 @@ class StatusFinder(private val context: Context) {
 
   /** Explores WhatsApp folders to find images and videos that were published. */
   fun findStatuses() {
-    val whatsAppStatusesFolderPath = StorageHelper(context).getWhatsAppStatusesFolderPath()
+    reset()
+    val statusesSnapshot = findStatuses(isWhatsAppBusiness = false)
+    val businessStatusesSnapshot = findStatuses(isWhatsAppBusiness = true)
+    images.addAll(sortMedia(statusesSnapshot.images + businessStatusesSnapshot.images))
+    videos.addAll(sortMedia(statusesSnapshot.videos + businessStatusesSnapshot.videos))
+  }
+
+  private fun findStatuses(isWhatsAppBusiness: Boolean = false): StatusesSnapshot {
+    val whatsAppStatusesFolderPath =
+      if (isWhatsAppBusiness) StorageHelper(context).getWhatsAppBusinessStatusesFolderPath() else StorageHelper(
+        context
+      ).getWhatsAppStatusesFolderPath()
+    val images = mutableListOf<Media>()
+    val videos = mutableListOf<Media>()
+
     if (whatsAppStatusesFolderPath != null) {
-      reset()
       val medias = FileExplorer.getMediasFromFile(File(whatsAppStatusesFolderPath))
       val mediasGroups = medias.groupBy { media -> media.mediaType }
       if (mediasGroups.containsKey(MediaType.IMAGE)) {
-        images.addAll(sortMedia(mediasGroups[MediaType.IMAGE] ?: error("Key missing in the map")))
+        images.addAll(mediasGroups[MediaType.IMAGE] ?: error("Key missing in the map"))
       }
       if (mediasGroups.containsKey(MediaType.VIDEO)) {
-        videos.addAll(sortMedia(mediasGroups[MediaType.VIDEO] ?: error("Key missing in the map")))
+        videos.addAll(mediasGroups[MediaType.VIDEO] ?: error("Key missing in the map"))
       }
-      state = FinderState.EXPLORED
     }
+
+    return StatusesSnapshot(images, videos)
   }
 
   /**

@@ -30,11 +30,13 @@ android {
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+      manifestPlaceholders.fileProvider = "com.ouattararomuald.statussaver.fileprovider"
     }
 
     debug {
       applicationIdSuffix ".debug"
       debuggable true
+      manifestPlaceholders.fileProvider = "com.ouattararomuald.statussaver.debug.fileprovider"
     }
   }
 

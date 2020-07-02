@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ouattararomuald.statussaver.R
@@ -36,6 +37,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
   private var clearOptionMenuItem: MenuItem? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
     super.onCreate(savedInstanceState)
     binding = ActivityHomeBinding.inflate(layoutInflater)
     val view = binding.root
