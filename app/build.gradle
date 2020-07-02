@@ -53,14 +53,14 @@ android {
     minApi29 {
       dimension "api"
       minSdkVersion 29
-      targetSdkVersion 29
+      targetSdkVersion 30
       versionCode 20000 + android.defaultConfig.versionCode
       versionNameSuffix "-minApi29"
     }
     minApi25 {
       dimension "api"
       minSdkVersion 25
-      targetSdkVersion 28
+      targetSdkVersion 30
       versionCode 10000 + android.defaultConfig.versionCode
       versionNameSuffix "-minApi25"
     }
