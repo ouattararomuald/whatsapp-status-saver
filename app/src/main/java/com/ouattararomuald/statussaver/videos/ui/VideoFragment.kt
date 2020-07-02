@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
+import com.ouattararomuald.statussaver.common.ui.EmptyItem
 import com.ouattararomuald.statussaver.databinding.FragmentVideosBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.videos.adapters.VideoItem
@@ -52,6 +53,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     val view = binding.root
     presenter = VideoPresenter(arguments?.getParcelableArrayList(VideoFragment.VIDEOS_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
+    //section.setPlaceholder(EmptyItem())
 
     groupAdapter.add(section)
     binding.imagesRecyclerView.apply {

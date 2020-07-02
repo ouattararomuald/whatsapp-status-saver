@@ -27,6 +27,8 @@
 
   <color name="black_overlay">#66000000</color>
 
+  <color name="empty_layout_background_color">@color/off_white</color>
+
   <color name="drawable_tint_color">@color/teal_700</color>
 
   <color name="tab_background_color">@color/off_white</color>
