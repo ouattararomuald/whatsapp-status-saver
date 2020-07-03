@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="images_fragment_title">Images</string>
+  <string name="videos_fragment_title">Vidéos</string>
+  <string name="title_activity_video_player">Lecteur Vidéo</string>
+  <string name="clear_menu_item">Annuler</string>
+  <string name="share_menu_item">Partager</string>
+  <string name="send_to">Envoyer à</string>
+  <string name="send_title">Status WhatsApp</string>
+  <string name="read_external_storage_rationale">Status Saver ne peut pas fonctionner sans accéder à votre stockage. Activez l\'accès à votre stockage afin que nous puissions enregistrer / découvrir les statuts.</string>
+  <string name="refresh_menu_item">Rafraîchir</string>
+  <string name="authorize_button_label">Autoriser</string>
+  <string name="switch_theme">Changer de thème</string>
+  <string name="no_data_available">Pas de données disponible</string>
+  <string name="share_image">Partagez une image</string>
+  <string name="share_video">Partagez une vidéo</string>
+</resources>

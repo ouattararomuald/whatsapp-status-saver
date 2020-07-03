@@ -1,21 +1,18 @@
 <resources>
-    <string name="app_name">Status Saver</string>
+  <string name="app_name" translatable="false">Status Saver</string>
+  <string name="share_app_message" translatable="false">Try this Awesome App \'Status Saver\' which helps you save WhatsApp Statuses.\n\n%s</string>
+  <string name="share_app_title" translatable="false">Share Status Saver App</string>
 
-    <string name="images_fragment_title">Images</string>
-    <string name="videos_fragment_title">Vidéos</string>
-    <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_video_player">FullscreenActivity</string>
-    <string name="clear_menu_item">Clear</string>
-    <string name="share_menu_item">Share</string>
-    <string name="send_to">Send to</string>
-    <string name="send_title">WhatsApp Statuses images</string>
-    <string name="read_external_storage_rationale">Status saver is unable to work without access to your storage. Enable access to your storage so we can save/discover statuses.</string>
-    <string name="refresh_menu_item">Refresh</string>
-    <string name="authorize_button_label">Authorize</string>
-    <string name="share_app_message">Try this Awesome App \'Status Saver\' which helps you save WhatsApp Statuses.\n\n%s</string>
-    <string name="share_app_title">Share Status Saver App</string>
+  <string name="images_fragment_title">Images</string>
+  <string name="videos_fragment_title">Videos</string>
+  <string name="title_activity_video_player">Video Player</string>
+  <string name="clear_menu_item">Clear</string>
+  <string name="share_menu_item">Share</string>
+  <string name="send_to">Send to</string>
+  <string name="send_title">WhatsApp Statuses</string>
+  <string name="read_external_storage_rationale">Status saver is unable to work without access to your storage. Enable access to your storage so we can save/discover statuses.</string>
+  <string name="refresh_menu_item">Refresh</string>
+  <string name="authorize_button_label">Authorize</string>
   <string name="switch_theme">Switch theme</string>
   <string name="no_data_available">No data available</string>
   <string name="share_image">Share image</string>
