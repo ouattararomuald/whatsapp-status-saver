@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
@@ -16,7 +17,9 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ActivityVideoPlayerBinding
+import com.ouattararomuald.statussaver.home.presenters.HomePresenter
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -76,6 +79,15 @@ class VideoPlayerActivity : AppCompatActivity() {
       selectedVideoIndex = intent.getIntExtra(SELECTED_VIDEO_INDEX_KEY, 0)
     }
 
+    binding.shareVideoButton.setOnClickListener {
+      if (selectedVideoIndex >= 0 && selectedVideoIndex < videos.size) {
+        startActivity(Intent.createChooser(
+          getMediasShareIntent(videos[selectedVideoIndex]),
+          resources.getText(R.string.send_to)
+        ))
+      }
+    }
+
     supportActionBar?.apply {
       setDisplayHomeAsUpEnabled(true)
       hide()
@@ -86,8 +98,10 @@ class VideoPlayerActivity : AppCompatActivity() {
     if (Build.VERSION.SDK_INT >= 30) {
       window.setDecorFitsSystemWindows(false)
     } else {
-      window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-          WindowManager.LayoutParams.FLAG_FULLSCREEN)
+      window.setFlags(
+        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        WindowManager.LayoutParams.FLAG_FULLSCREEN
+      )
     }
   }
 
@@ -109,7 +123,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
   private fun buildMediaSource(): MediaSource? {
     val dataSourceFactory: DataSource.Factory =
-        DefaultDataSourceFactory(this, "exoplayer-status-saver")
+      DefaultDataSourceFactory(this, "exoplayer-status-saver")
 
     val mediaSourceFactory = ProgressiveMediaSource.Factory(dataSourceFactory)
 
@@ -135,5 +149,26 @@ class VideoPlayerActivity : AppCompatActivity() {
       }
       player = null
     }
+  }
+
+  private fun getMediasShareIntent(media: Media): Intent {
+    val shareIntent: Intent = Intent().apply {
+      action = Intent.ACTION_SEND
+      putExtra(Intent.EXTRA_SUBJECT, resources.getText(R.string.send_title))
+      type = "video/*"
+
+      val authority = "${applicationContext.packageName}.fileprovider"
+      val fileUri = FileProvider.getUriForFile(
+        this@VideoPlayerActivity,
+        authority,
+        media.file
+      )
+
+      addCategory(Intent.CATEGORY_OPENABLE)
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      putExtra(Intent.EXTRA_STREAM, fileUri)
+    }
+
+    return shareIntent
   }
 }

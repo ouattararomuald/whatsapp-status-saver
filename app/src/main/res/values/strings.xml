@@ -18,4 +18,6 @@
     <string name="share_app_title">Share Status Saver App</string>
   <string name="switch_theme">Switch theme</string>
   <string name="no_data_available">No data available</string>
+  <string name="share_image">Share image</string>
+  <string name="share_video">Share video</string>
 </resources>

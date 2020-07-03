@@ -6,7 +6,9 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ActivityFullscreenImageViewerBinding
 import com.ouattararomuald.statussaver.images.adapters.FullScreenImagePager
 import com.ouattararomuald.statussaver.videos.ui.VideoPlayerActivity
@@ -50,6 +52,15 @@ class FullScreenImageViewerActivity : AppCompatActivity() {
     binding.pager.adapter = FullScreenImagePager(this, images)
     binding.pager.currentItem = selectedImageIndex
 
+    binding.shareImageButton.setOnClickListener {
+      if (selectedImageIndex >= 0 && selectedImageIndex < images.size) {
+        startActivity(Intent.createChooser(
+          getMediasShareIntent(images[selectedImageIndex]),
+          resources.getText(R.string.send_to)
+        ))
+      }
+    }
+
     supportActionBar?.apply {
       setDisplayHomeAsUpEnabled(true)
       hide()
@@ -63,5 +74,25 @@ class FullScreenImageViewerActivity : AppCompatActivity() {
       window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
           WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
+  }
+
+  private fun getMediasShareIntent(media: Media): Intent {
+    val shareIntent: Intent = Intent().apply {
+      action = Intent.ACTION_SEND
+      putExtra(Intent.EXTRA_SUBJECT, resources.getText(R.string.send_title))
+      type = "image/*"
+
+      val authority = "${applicationContext.packageName}.fileprovider"
+      val fileUri = FileProvider.getUriForFile(
+        this@FullScreenImageViewerActivity,
+        authority,
+        media.file
+      )
+
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      putExtra(Intent.EXTRA_STREAM, fileUri)
+    }
+
+    return shareIntent
   }
 }
