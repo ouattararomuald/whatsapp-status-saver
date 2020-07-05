@@ -32,6 +32,7 @@ buildscript {
     ],
     'coil': 'io.coil-kt:coil:0.11.0',
     'easypermissions': 'pub.devrel:easypermissions:3.0.0',
+    'okio': 'com.squareup.okio:okio:2.6.0',
     'workManager': "androidx.work:work-runtime-ktx:${versions.workManager}",
   ]
 
