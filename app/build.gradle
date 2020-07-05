@@ -94,6 +94,8 @@ dependencies {
 
   implementation deps.coil
 
+  implementation deps.okio
+
   implementation deps.easypermissions
 
   implementation deps.groupie.core

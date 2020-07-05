@@ -26,6 +26,8 @@
 
   <color name="orange_500">#FF5722</color>
   <color name="orange_700">#E64A19</color>
+  <color name="snackbar_text_color">@color/orange_700</color>
+  <color name="snackbar_text_color_failure">?attr/colorError</color>
 
   <color name="black_overlay">#66000000</color>
 

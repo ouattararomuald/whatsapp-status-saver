@@ -13,7 +13,7 @@
       android:layout_height="match_parent" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
-      android:id="@+id/shareImageButton"
+      android:id="@+id/optionsImageButton"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="16dp"
@@ -21,4 +21,28 @@
       android:contentDescription="@string/share_image"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/shareImageButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="16dp"
+      android:src="@drawable/ic_share"
+      android:contentDescription="@string/share_image"
+      android:visibility="gone"
+      app:layout_constraintBottom_toTopOf="@id/optionsImageButton"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:fabSize="mini" />
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/saveImageButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="16dp"
+      android:src="@drawable/ic_save"
+      android:contentDescription="@string/share_image"
+      android:visibility="gone"
+      app:layout_constraintBottom_toTopOf="@id/shareImageButton"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:fabSize="mini" />
 </androidx.constraintlayout.widget.ConstraintLayout>
