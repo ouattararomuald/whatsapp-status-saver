@@ -59,6 +59,10 @@ class HomePresenter(
     statusFinder.findStatuses()
     statusesSnapshot = statusFinder.getSnapshot()
 
+    if (!::pages.isInitialized) {
+      return
+    }
+
     pages.forEach { page ->
       val medias = when (page.fragment) {
         is ImageFragment -> {
@@ -79,6 +83,9 @@ class HomePresenter(
   }
 
   override fun onClearOptionMenuItemClicked() {
+    if (!::pages.isInitialized) {
+      return
+    }
     pages.forEach { page ->
       if (currentFragment == page.fragment) {
         page.onClearSelection()
@@ -87,6 +94,9 @@ class HomePresenter(
   }
 
   override fun onShareOptionMenuItemClicked() {
+    if (!::pages.isInitialized) {
+      return
+    }
     pages.forEach { page ->
       if (currentFragment == page.fragment) {
         page.onShareClicked()

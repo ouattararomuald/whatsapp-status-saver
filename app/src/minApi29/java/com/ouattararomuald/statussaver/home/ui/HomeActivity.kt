@@ -35,6 +35,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
   lateinit var presenter: HomeContract.HomePresenter
 
   private var clearOptionMenuItem: MenuItem? = null
+  private var refreshOptionMenuItem: MenuItem? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
@@ -141,6 +142,8 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
     inflater.inflate(R.menu.home, menu)
     if (menu != null) {
       clearOptionMenuItem = menu.getItem(0)
+      refreshOptionMenuItem = menu.getItem(2)
+      refreshOptionMenuItem?.isEnabled = hasRequiredPermissions()
     }
     return true
   }
