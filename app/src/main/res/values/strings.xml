@@ -17,4 +17,6 @@
   <string name="no_data_available">No data available</string>
   <string name="share_image">Share image</string>
   <string name="share_video">Share video</string>
+  <string name="file_successfully_saved_message">The file has been successfully saved.</string>
+  <string name="file_save_failure_message">Oups! Something went wrong while saving the file..</string>
 </resources>
