@@ -2,7 +2,7 @@
   <!-- Base application theme. -->
   <style name="Theme.StatusSaver" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
     <!-- Primary brand color. -->
-    <item name="colorPrimary">@color/white</item>
+    <item name="colorPrimary">@color/teal_700</item>
     <item name="colorPrimaryVariant">@color/white</item>
     <item name="colorOnPrimary">@color/black</item>
     <!-- Secondary brand color. -->
@@ -16,11 +16,22 @@
     <item name="android:windowBackground">@color/off_white</item>
     <item name="toolbarStyle">@style/ToolbarStyle</item>
     <item name="iconTint">@color/teal_700</item>
+    <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
+    <item name="android:alertDialogStyle">@style/AlertDialogStyle</item>
+  </style>
+
+  <style name="AlertDialogTheme" parent="">
+    <item name="android:windowBackground">@color/teal_700</item>
+    <item name="android:textColor">@color/teal_700</item>
+  </style>
+
+  <style name="AlertDialogStyle" parent="android:Theme.Material.Dialog">
+    <item name="android:textColor">@color/teal_700</item>
   </style>
 
   <style name="ToolbarStyle" parent="Widget.MaterialComponents.Toolbar.Primary">
-    <item name="background">@color/black</item>
-    <item name="titleTextColor">@color/black</item>
+    <item name="android:background">@color/white</item>
+    <item name="android:titleTextColor">@color/teal_700</item>
   </style>
 
   <style name="Theme.StatusSaver.Fullscreen" parent="Theme.StatusSaver">
@@ -32,6 +43,6 @@
 
   <style name="ThemeOverlay.StatusSaver.FullscreenContainer" parent="">
     <item name="fullscreenBackgroundColor">@android:color/background_dark</item>
-    <item name="fullscreenTextColor">@color/light_blue_A200</item>
+    <item name="fullscreenTextColor">@color/teal_700</item>
   </style>
 </resources>
