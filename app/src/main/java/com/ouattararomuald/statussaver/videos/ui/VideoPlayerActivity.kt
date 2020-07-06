@@ -112,15 +112,11 @@ class VideoPlayerActivity : MediaViewerActivity() {
   override fun getRootView(): View = binding.root
 
   private fun showSubMenus() {
-    binding.shareVideoButton.isVisible = true
-    binding.saveVideoButton.isVisible = true
     binding.optionsVideoButton.setImageDrawable(resources.getDrawable(R.drawable.ic_clear, theme))
     isFabExpanded = true
   }
 
   private fun hideSubMenus() {
-    binding.shareVideoButton.isVisible = false
-    binding.saveVideoButton.isVisible = false
     binding.optionsVideoButton.setImageDrawable(resources.getDrawable(R.drawable.ic_add, theme))
     isFabExpanded = false
   }

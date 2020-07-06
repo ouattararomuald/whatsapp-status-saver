@@ -93,16 +93,12 @@ class FullScreenImageViewerActivity : MediaViewerActivity() {
   override fun getRootView(): View = binding.root
 
   private fun showSubMenus() {
-    /*binding.shareImageButton.isVisible = true
-    binding.saveImageButton.isVisible = true
-    binding.optionsImageButton.setImageDrawable(resources.getDrawable(R.drawable.ic_clear, theme))*/
+    binding.optionsImageButton.setImageDrawable(resources.getDrawable(R.drawable.ic_clear, theme))
     isFabExpanded = true
   }
 
   private fun hideSubMenus() {
-    /*binding.shareImageButton.isVisible = false
-    binding.saveImageButton.isVisible = false
-    binding.optionsImageButton.setImageDrawable(resources.getDrawable(R.drawable.ic_add, theme))*/
+    binding.optionsImageButton.setImageDrawable(resources.getDrawable(R.drawable.ic_add, theme))
     isFabExpanded = false
   }
 }
