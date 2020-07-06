@@ -26,11 +26,17 @@ class FileHelper : CoroutineScope {
   private val handler = CoroutineExceptionHandler { _, exception ->
   }
 
-  fun writeFile(outputStream: OutputStream, fileToWrite: File) {
+  /**
+   * Writes the given [inputFile] into the given [outputStream].
+   *
+   * @param outputStream destination stream.
+   * @param inputFile source file.
+   */
+  fun writeFile(outputStream: OutputStream, inputFile: File) {
     launch(handler) {
       outputStream.use {
         val sink = it.sink().buffer()
-        sink.writeAll(fileToWrite.source())
+        sink.writeAll(inputFile.source())
         sink.close()
       }
     }
