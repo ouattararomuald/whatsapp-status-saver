@@ -1,16 +1,11 @@
 package com.ouattararomuald.statussaver.videos.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
+import android.view.View
 import androidx.core.view.isVisible
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -19,21 +14,17 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.material.snackbar.Snackbar
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.VIDEO_MIME_TYPE
-import com.ouattararomuald.statussaver.core.FileHelper
+import com.ouattararomuald.statussaver.common.ui.MediaViewerActivity
 import com.ouattararomuald.statussaver.databinding.ActivityVideoPlayerBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class VideoPlayerActivity : AppCompatActivity() {
+class VideoPlayerActivity : MediaViewerActivity() {
 
   companion object {
     private const val SELECTED_VIDEO_INDEX_KEY = "selected_video_index_key"
@@ -68,7 +59,6 @@ class VideoPlayerActivity : AppCompatActivity() {
   private var selectedVideoIndex = 0
   private var isFabExpanded = false
 
-  private var fileHelper = FileHelper()
   private var player: SimpleExoPlayer? = null
 
   private var playWhenReady = true
@@ -81,8 +71,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     binding = ActivityVideoPlayerBinding.inflate(layoutInflater)
     val view = binding.root
     setContentView(view)
-
-    enableFullScreen()
 
     if (intent.extras?.containsKey(VIDEO_KEY) == true) {
       videos = intent.getParcelableArrayListExtra(VIDEO_KEY)!!
@@ -102,7 +90,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     binding.shareVideoButton.setOnClickListener {
       if (selectedVideoIndex >= 0 && selectedVideoIndex < videos.size) {
         startActivity(Intent.createChooser(
-          getMediasShareIntent(videos[selectedVideoIndex]),
+          getShareMediaIntent(videos[selectedVideoIndex]),
           resources.getText(R.string.send_to)
         ))
       }
@@ -120,62 +108,13 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
   }
 
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == RQ_CREATE_FILE) {
-      if (resultCode == Activity.RESULT_OK) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          val uri = data?.data
-          if (uri != null) {
-            val stream = contentResolver.openOutputStream(uri)
-            stream?.let {
-              fileHelper.writeFile(it, videos[videoToWriteIndex].file)
-            }
-            displaySuccessMessage()
-          }
-        }
-      }
-    }
-  }
+  override fun getMedias(): List<Media> = videos
 
-  private fun displaySuccessMessage() {
-    Snackbar.make(
-      binding.root,
-      "The file has been successfully saved.",
-      Snackbar.LENGTH_LONG
-    ).setTextColor(resources.getColor(R.color.snackbar_text_color, theme)).show()
-  }
+  override fun getMediaToWriteIndex(): Int = videoToWriteIndex
 
-  private fun displayFailureMessage() {
-    Snackbar.make(
-      binding.root,
-      "Oups! Something went wrong while saving the file.",
-      Snackbar.LENGTH_LONG
-    ).setTextColor(resources.getColor(R.color.snackbar_text_color_failure, theme)).show()
-  }
+  override fun getMediaMimeType(): String = VIDEO_MIME_TYPE
 
-  private fun saveFile(file: File) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      createFile(file)
-    } else {
-      fileHelper.writeFile(file) {
-        withContext(Dispatchers.Main) {
-          displaySuccessMessage()
-        }
-      }
-    }
-  }
-
-  @RequiresApi(Build.VERSION_CODES.O)
-  private fun createFile(file: File) {
-    val fileName = file.name
-    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-      addCategory(Intent.CATEGORY_OPENABLE)
-      type = VIDEO_MIME_TYPE
-      putExtra(Intent.EXTRA_TITLE, fileName)
-    }
-    startActivityForResult(intent, RQ_CREATE_FILE)
-  }
+  override fun getRootView(): View = binding.root
 
   private fun showSubMenus() {
     binding.shareVideoButton.isVisible = true
@@ -189,17 +128,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     binding.saveVideoButton.isVisible = false
     binding.optionsVideoButton.setImageDrawable(resources.getDrawable(R.drawable.ic_add, theme))
     isFabExpanded = false
-  }
-
-  private fun enableFullScreen() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      window.setDecorFitsSystemWindows(false)
-    } else {
-      window.setFlags(
-        WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        WindowManager.LayoutParams.FLAG_FULLSCREEN
-      )
-    }
   }
 
   override fun onStart() {
@@ -246,26 +174,5 @@ class VideoPlayerActivity : AppCompatActivity() {
       }
       player = null
     }
-  }
-
-  private fun getMediasShareIntent(media: Media): Intent {
-    val shareIntent: Intent = Intent().apply {
-      action = Intent.ACTION_SEND
-      putExtra(Intent.EXTRA_SUBJECT, resources.getText(R.string.send_title))
-      type = VIDEO_MIME_TYPE
-
-      val authority = "${applicationContext.packageName}.fileprovider"
-      val fileUri = FileProvider.getUriForFile(
-        this@VideoPlayerActivity,
-        authority,
-        media.file
-      )
-
-      addCategory(Intent.CATEGORY_OPENABLE)
-      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-      putExtra(Intent.EXTRA_STREAM, fileUri)
-    }
-
-    return shareIntent
   }
 }
