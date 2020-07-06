@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+  <Transition
+      motion:constraintSetStart="@+id/start"
+      motion:constraintSetEnd="@+id/end"
+      motion:duration="500">
+    <OnClick motion:targetId="@+id/optionsImageButton" />
+  </Transition>
+
+
+  <ConstraintSet android:id="@+id/start">
+    <Constraint
+        android:id="@+id/optionsImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        motion:layout_constraintBottom_toBottomOf="parent"
+        motion:layout_constraintEnd_toEndOf="parent"
+        >
+    </Constraint>
+    <Constraint
+        android:id="@+id/shareImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        motion:layout_constraintTop_toTopOf="@id/optionsImageButton"
+        motion:layout_constraintBottom_toBottomOf="@id/optionsImageButton"
+        motion:layout_constraintStart_toStartOf="@id/optionsImageButton"
+        motion:layout_constraintEnd_toEndOf="@id/optionsImageButton"
+        android:visibility="gone"
+        motion:fabSize="mini" />
+    <Constraint
+        android:id="@+id/saveImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        motion:layout_constraintTop_toTopOf="@id/optionsImageButton"
+        motion:layout_constraintBottom_toBottomOf="@id/optionsImageButton"
+        motion:layout_constraintStart_toStartOf="@id/optionsImageButton"
+        motion:layout_constraintEnd_toEndOf="@id/optionsImageButton"
+        android:visibility="gone"
+        motion:fabSize="mini" />
+  </ConstraintSet>
+
+  <ConstraintSet android:id="@+id/end">
+    <Constraint
+        android:id="@+id/optionsImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="28dp"
+        android:rotationX="180"
+        motion:layout_constraintBottom_toBottomOf="parent"
+        motion:layout_constraintEnd_toEndOf="parent"
+        >
+    </Constraint>
+    <Constraint
+        android:id="@+id/shareImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="8dp"
+        android:rotationX="360"
+        motion:layout_constraintBottom_toTopOf="@id/optionsImageButton"
+        motion:layout_constraintStart_toStartOf="@id/optionsImageButton"
+        motion:layout_constraintEnd_toEndOf="@id/optionsImageButton"
+        android:visibility="visible"
+        motion:fabSize="mini"
+        />
+    <Constraint
+        android:id="@+id/saveImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotationX="360"
+        motion:layout_constraintBottom_toTopOf="@id/shareImageButton"
+        motion:layout_constraintStart_toStartOf="@id/optionsImageButton"
+        motion:layout_constraintEnd_toEndOf="@id/optionsImageButton"
+        android:visibility="visible"
+        motion:fabSize="mini"
+        />
+  </ConstraintSet>
+
+</MotionScene>
