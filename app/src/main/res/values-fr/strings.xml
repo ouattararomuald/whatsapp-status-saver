@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Status Saver</string>
-  <string name="share_app_message">Try this Awesome App \'Status Saver\' which helps you save WhatsApp Statuses.\n\n%s</string>
-  <string name="share_app_title">Share Status Saver App</string>
+  <string name="app_name">Status Snapshot</string>
+  <string name="share_app_message">Try this Awesome App \'Status Snapshot\' which helps you save WhatsApp Statuses.\n\n%s</string>
+  <string name="share_app_title">Share Status Snapshot App</string>
 
   <string name="images_fragment_title">Images</string>
   <string name="videos_fragment_title">Vidéos</string>
@@ -11,7 +11,7 @@
   <string name="share_menu_item">Partager</string>
   <string name="send_to">Envoyer à</string>
   <string name="send_title">Status WhatsApp</string>
-  <string name="read_external_storage_rationale">Status Saver ne peut pas fonctionner sans accéder à votre stockage. Activez l\'accès à votre stockage afin que nous puissions enregistrer / découvrir les statuts.</string>
+  <string name="read_external_storage_rationale">Status Snapshot ne peut pas fonctionner sans accéder à votre stockage. Activez l\'accès à votre stockage afin que nous puissions enregistrer / découvrir les statuts.</string>
   <string name="refresh_menu_item">Rafraîchir</string>
   <string name="authorize_button_label">Autoriser</string>
   <string name="switch_theme">Changer de thème</string>
