@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="app_name">Status Saver</string>
+  <string name="share_app_message">Try this Awesome App \'Status Saver\' which helps you save WhatsApp Statuses.\n\n%s</string>
+  <string name="share_app_title">Share Status Saver App</string>
+
   <string name="images_fragment_title">Images</string>
   <string name="videos_fragment_title">Vidéos</string>
   <string name="title_activity_video_player">Lecteur Vidéo</string>
