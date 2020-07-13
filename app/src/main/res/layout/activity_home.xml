@@ -17,7 +17,10 @@
         app:tabIndicatorColor="@color/tab_indicator_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
+        app:tabMode="fixed"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
