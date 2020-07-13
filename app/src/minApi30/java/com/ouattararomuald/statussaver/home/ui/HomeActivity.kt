@@ -63,6 +63,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
     binding.pager.isVisible = false
     binding.authorizationTextView.isVisible = true
     binding.authorizeButton.isVisible = true
+    refreshOptionMenuItem?.isEnabled = false
   }
 
   private fun hideAuthorizationViews() {
@@ -70,6 +71,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
     binding.pager.isVisible = true
     binding.authorizationTextView.isVisible = false
     binding.authorizeButton.isVisible = false
+    refreshOptionMenuItem?.isEnabled = true
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
