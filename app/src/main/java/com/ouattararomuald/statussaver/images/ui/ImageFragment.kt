@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import coil.util.CoilUtils
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
-import com.ouattararomuald.statussaver.common.ui.EmptyItem
+import com.ouattararomuald.statussaver.common.ui.SectionItem
 import com.ouattararomuald.statussaver.databinding.FragmentImagesBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.images.adapters.ImageItem
@@ -19,6 +20,7 @@ import com.ouattararomuald.statussaver.images.presenters.ImagePresenter
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Section
+import okhttp3.Cache
 
 class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable {
 
@@ -39,7 +41,9 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
   private lateinit var binding: FragmentImagesBinding
   lateinit var presenter: ImagePresenter
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
-  private val section = Section()
+  private val newStatusesSection = Section()
+  private val oldStatusesSection = Section()
+  private lateinit var gridLayoutManager: GridLayoutManager
 
   private val selectedMedia: MutableMap<Media, ImageItem> = mutableMapOf()
   private val imageItems = mutableListOf<ImageItem>()
@@ -55,9 +59,25 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     groupAdapter = GroupAdapter()
     //section.setPlaceholder(EmptyItem())
 
-    groupAdapter.add(section)
+    gridLayoutManager = GridLayoutManager(context, 2)
+    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+      override fun getSpanSize(position: Int): Int {
+        return if (position == 0 || position > imageItems.size) {
+          2
+        } else {
+          1
+        }
+      }
+    }
+
+    groupAdapter.add(SectionItem("New"))
+    groupAdapter.add(newStatusesSection)
+    groupAdapter.add(SectionItem("Old"))
+    groupAdapter.add(oldStatusesSection)
+
+
     binding.imagesRecyclerView.apply {
-      layoutManager = GridLayoutManager(context, 2)
+      layoutManager = gridLayoutManager
       adapter = groupAdapter
       setHasFixedSize(true)
     }
@@ -119,12 +139,12 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
       imageItems.addAll(medias.mapIndexed { index, media -> media.toImageItem(index) })
     }
-    section.addAll(imageItems)
+    newStatusesSection.addAll(imageItems)
   }
 
   override fun onUpdateData(medias: List<Media>) {
     imageItems.clear()
-    section.clear()
+    newStatusesSection.clear()
     displayMedias(medias)
   }
 

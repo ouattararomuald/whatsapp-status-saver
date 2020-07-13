@@ -61,6 +61,24 @@ class FileHelper : CoroutineScope {
     }
   }
 
+  fun writeFile(fileToWrite: File, destinationFolder: File) {
+    launch(handler) {
+      val fileName = fileToWrite.name
+      val destinationFile = File(
+        destinationFolder,
+        "$SAVED_MEDIA_DESTINATION_FOLDER_NAME/${fileName}"
+      )
+
+      val fileOutputStream = FileOutputStream(destinationFile)
+      try {
+        fileOutputStream.write(android.R.attr.data)
+      } catch (e: IOException) {
+      } finally {
+        fileOutputStream.close()
+      }
+    }
+  }
+
   fun cancelTasks() {
     cancel()
   }
