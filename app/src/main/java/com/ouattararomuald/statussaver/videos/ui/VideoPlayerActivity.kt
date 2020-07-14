@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.View
 import androidx.core.view.isVisible
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -14,6 +15,8 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton.OnVisibilityChangedListener
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.VIDEO_MIME_TYPE
@@ -129,6 +132,22 @@ class VideoPlayerActivity : MediaViewerActivity() {
   private fun initializePlayer() {
     player = ExoPlayerFactory.newSimpleInstance(this)
     binding.videoView.player = player
+
+    binding.videoView.controllerHideOnTouch = true
+
+    binding.videoView.setControllerVisibilityListener { visibility ->
+      when(visibility) {
+        View.VISIBLE -> {
+          binding.optionsVideoButton.hide()
+        }
+        else -> {
+          binding.optionsVideoButton.show()
+        }
+      }
+    }
+
+    binding.videoView.hideController()
+
     val mediaSource = buildMediaSource()
     (player as SimpleExoPlayer).run {
       this.playWhenReady = this@VideoPlayerActivity.playWhenReady
