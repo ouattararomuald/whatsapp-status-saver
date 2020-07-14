@@ -20,6 +20,9 @@
         motion:layout_constraintBottom_toBottomOf="parent"
         motion:layout_constraintEnd_toEndOf="parent"
         >
+      <PropertySet
+          motion:visibilityMode="ignore"
+        />
     </Constraint>
     <Constraint
         android:id="@+id/shareVideoButton"
