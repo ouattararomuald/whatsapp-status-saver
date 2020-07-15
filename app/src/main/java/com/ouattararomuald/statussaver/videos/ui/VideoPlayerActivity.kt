@@ -9,6 +9,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import androidx.core.view.isVisible
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -86,18 +87,24 @@ class VideoPlayerActivity : MediaViewerActivity() {
     }
 
     binding.shareVideoButton.setOnClickListener {
-      if (selectedVideoIndex >= 0 && selectedVideoIndex < videos.size) {
+      videoToWriteIndex = player?.currentWindowIndex ?: 0
+      if (videoToWriteIndex >= 0 && videoToWriteIndex < videos.size) {
+        selectedVideoIndex = videoToWriteIndex
+        // videoToWriteIndex = selectedVideoIndex
         startActivity(Intent.createChooser(
-          getShareMediaIntent(videos[selectedVideoIndex]),
+          getShareMediaIntent(videos[videoToWriteIndex]),
           resources.getText(R.string.send_to)
         ))
       }
     }
 
     binding.saveVideoButton.setOnClickListener {
-      val videoMedia = videos[selectedVideoIndex]
-      videoToWriteIndex = selectedVideoIndex
-      saveFile(videoMedia.file)
+      videoToWriteIndex = player?.currentWindowIndex ?: 0
+      if (videoToWriteIndex >= 0 && videoToWriteIndex < videos.size) {
+        selectedVideoIndex = videoToWriteIndex
+        val videoMedia = videos[videoToWriteIndex]
+        saveFile(videoMedia.file)
+      }
     }
 
     supportActionBar?.apply {

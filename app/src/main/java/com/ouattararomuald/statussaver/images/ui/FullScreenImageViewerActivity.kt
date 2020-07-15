@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.viewpager2.widget.ViewPager2
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.IMAGE_MIME_TYPE
@@ -50,6 +51,12 @@ class FullScreenImageViewerActivity : MediaViewerActivity() {
 
     binding.pager.adapter = FullScreenImagePager(this, images)
     binding.pager.currentItem = selectedImageIndex
+    binding.pager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+      override fun onPageSelected(position: Int) {
+        selectedImageIndex = position
+        imageToWriteIndex = selectedImageIndex
+      }
+    })
 
     hideSubMenus()
 
@@ -73,9 +80,11 @@ class FullScreenImageViewerActivity : MediaViewerActivity() {
     }
 
     binding.saveImageButton.setOnClickListener {
-      val imageMedia = images[selectedImageIndex]
-      imageToWriteIndex = selectedImageIndex
-      saveFile(imageMedia.file)
+      if (selectedImageIndex >= 0 && selectedImageIndex < images.size) {
+        val imageMedia = images[selectedImageIndex]
+        //imageToWriteIndex = selectedImageIndex
+        saveFile(imageMedia.file)
+      }
     }
 
     supportActionBar?.apply {
