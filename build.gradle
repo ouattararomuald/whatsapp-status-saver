@@ -33,6 +33,9 @@ buildscript {
     'coil': 'io.coil-kt:coil:0.11.0',
     'easypermissions': 'pub.devrel:easypermissions:3.0.0',
     'okio': 'com.squareup.okio:okio:2.6.0',
+    'sqldelight': 'com.squareup.sqldelight:android-driver:1.4.0',
+    'stetho': 'com.facebook.stetho:stetho:1.5.1',
+    'threetenabp': 'com.jakewharton.threetenabp:threetenabp:1.2.4',
     'workManager': "androidx.work:work-runtime-ktx:${versions.workManager}",
   ]
 
@@ -47,6 +50,7 @@ buildscript {
   dependencies {
     classpath 'com.android.tools.build:gradle:4.2.0-alpha04'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath 'com.squareup.sqldelight:gradle-plugin:1.4.0'
 
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files

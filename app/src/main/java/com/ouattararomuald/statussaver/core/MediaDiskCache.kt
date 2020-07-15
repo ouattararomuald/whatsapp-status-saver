@@ -13,7 +13,7 @@ import kotlin.coroutines.CoroutineContext
 class MediaDiskCache(private val context: Context): CoroutineScope {
 
   companion object {
-    private const val FILE_CACHE_PREFIX_NAME = "ci.ogr."
+    const val FILE_CACHE_PREFIX_NAME = "ci.ogr"
   }
 
   private val job = SupervisorJob()

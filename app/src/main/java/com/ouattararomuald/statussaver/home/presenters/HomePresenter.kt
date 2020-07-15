@@ -9,6 +9,8 @@ import com.ouattararomuald.statussaver.BuildConfig
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Updatable
+import com.ouattararomuald.statussaver.core.db.DatabaseProvider
+import com.ouattararomuald.statussaver.core.db.MediaRepository
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.images.ui.ImageFragment
 import com.ouattararomuald.statussaver.statuses.StatusFinder
@@ -25,6 +27,8 @@ class HomePresenter(
   private var statusesSnapshot: StatusesSnapshot? = null
 
   private var currentFragment: Fragment? = null
+
+  private val mediaRepository = MediaRepository(context)
 
   private fun initializedPages() {
     pages = arrayOf(
@@ -50,6 +54,8 @@ class HomePresenter(
     statusFinder.findStatuses()
     statusesSnapshot = statusFinder.getSnapshot()
 
+    saveStatuses()
+
     initializedPages()
 
     view.displayPages(pages)
@@ -58,6 +64,8 @@ class HomePresenter(
   override fun refreshData() {
     statusFinder.findStatuses()
     statusesSnapshot = statusFinder.getSnapshot()
+
+    saveStatuses()
 
     if (!::pages.isInitialized) {
       return
@@ -79,6 +87,13 @@ class HomePresenter(
       if (page.fragment is Updatable) {
         page.fragment.onUpdateData(medias)
       }
+    }
+  }
+
+  private fun saveStatuses() {
+    statusesSnapshot?.let {
+      mediaRepository.saveMedias(it.images)
+      mediaRepository.saveMedias(it.videos)
     }
   }
 

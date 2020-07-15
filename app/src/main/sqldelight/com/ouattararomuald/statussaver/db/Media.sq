@@ -1,0 +1,31 @@
+import com.ouattararomuald.statussaver.MediaType;
+import org.threeten.bp.LocalDateTime;
+
+CREATE TABLE medias (
+  id TEXT PRIMARY KEY NOT NULL,
+  absolutePath TEXT NOT NULL,
+  mediaType TEXT AS MediaType NOT NULL,
+  publishDate TEXT AS LocalDateTime NOT NULL,
+  saveDate TEXT AS LocalDateTime NOT NULL
+);
+
+CREATE INDEX medias_absolute_path ON medias(absolutePath);
+CREATE INDEX medias_mediaType ON medias(mediaType);
+CREATE INDEX medias_publish_date ON medias(publishDate);
+CREATE INDEX medias_save_date ON medias(saveDate);
+
+insertMedia:
+INSERT INTO medias (id, absolutePath, mediaType, publishDate, saveDate)
+VALUES (?, ?, ?, ?, ?);
+
+countMediaById:
+SELECT COUNT(*) AS NB FROM medias WHERE id = :id;
+
+getAudios:
+SELECT absolutePath, mediaType FROM medias WHERE mediaType = 'IMAGE' ORDER BY saveDate, publishDate DESC;
+
+getVideos:
+SELECT absolutePath, mediaType FROM medias WHERE mediaType = 'VIDEO' ORDER BY saveDate, publishDate DESC;
+
+deleteOldMedias:
+DELETE FROM medias WHERE saveDate < :given_date;
