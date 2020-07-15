@@ -15,9 +15,12 @@ import org.threeten.bp.ZoneId
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class MediaRepository(private val context: Context): CoroutineScope {
+class MediaRepository(context: Context): CoroutineScope {
+
   private val databaseProvider = DatabaseProvider(context)
   private val mediaQueries = databaseProvider.mediaQueries
+
+  private val mediaDiskCache = MediaDiskCache(context)
 
   private val job = SupervisorJob()
 
@@ -42,16 +45,18 @@ class MediaRepository(private val context: Context): CoroutineScope {
       medias.forEach { media ->
         val mediaId = "${MediaDiskCache.FILE_CACHE_PREFIX_NAME}.${media.file.name}"
         if (!mediaExists(mediaId)) {
-          mediaQueries.insertMedia(
-            mediaId,
-            media.file.absolutePath,
-            media.mediaType,
-            LocalDateTime.ofInstant(
-              Instant.ofEpochMilli(media.file.lastModified()),
-              ZoneId.systemDefault()
-            ),
-            LocalDateTime.now()
-          )
+          mediaDiskCache.add(mediaId, media) {
+            mediaQueries.insertMedia(
+              mediaId,
+              media.file.absolutePath,
+              media.mediaType,
+              LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(media.file.lastModified()),
+                ZoneId.systemDefault()
+              ),
+              LocalDateTime.now()
+            )
+          }
         }
       }
     }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
+  <cache-path path="." name="cacheMedias" />
   <external-path path="WhatsApp/Media/.Statuses/" name="medias" />
   <external-path path="WhatsApp Business/Media/.Statuses/" name="business_medias" />
 </paths>

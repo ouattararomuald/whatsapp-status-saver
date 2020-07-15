@@ -1,6 +1,7 @@
 package com.ouattararomuald.statussaver.core
 
 import android.os.Environment
+import android.util.Log
 import com.ouattararomuald.statussaver.common.SAVED_MEDIA_DESTINATION_FOLDER_NAME
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -17,13 +18,23 @@ import java.io.IOException
 import java.io.OutputStream
 import kotlin.coroutines.CoroutineContext
 
-class FileHelper : CoroutineScope {
+class FileHelper: CoroutineScope {
   private val job = SupervisorJob()
 
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO + job
 
   private val handler = CoroutineExceptionHandler { _, exception ->
+    exception.message?.let {
+      Log.e("FILE_HELPER", it)
+    }
+  }
+
+  fun writeFile(sourceFile: File, destinationFolder: File, onFinishBlock: suspend CoroutineScope.() -> Unit) {
+    writeFile(FileOutputStream(destinationFolder), sourceFile)
+    launch(coroutineContext + handler) {
+      onFinishBlock()
+    }
   }
 
   /**
@@ -33,7 +44,7 @@ class FileHelper : CoroutineScope {
    * @param inputFile source file.
    */
   fun writeFile(outputStream: OutputStream, inputFile: File) {
-    launch(handler) {
+    launch(coroutineContext + handler) {
       outputStream.use {
         val sink = it.sink().buffer()
         sink.writeAll(inputFile.source())
@@ -43,7 +54,7 @@ class FileHelper : CoroutineScope {
   }
 
   fun writeFile(fileToWrite: File, onFinishBlock: suspend CoroutineScope.() -> Unit) {
-    launch(handler) {
+    launch(coroutineContext + handler) {
       val fileName = fileToWrite.name
       val destinationFile = File(
         Environment.getExternalStorageDirectory(),
@@ -51,27 +62,10 @@ class FileHelper : CoroutineScope {
       )
 
       val fileOutputStream = FileOutputStream(destinationFile)
+
       try {
         fileOutputStream.write(android.R.attr.data)
         onFinishBlock()
-      } catch (e: IOException) {
-      } finally {
-        fileOutputStream.close()
-      }
-    }
-  }
-
-  fun writeFile(fileToWrite: File, destinationFolder: File) {
-    launch(handler) {
-      val fileName = fileToWrite.name
-      val destinationFile = File(
-        destinationFolder,
-        "$SAVED_MEDIA_DESTINATION_FOLDER_NAME/${fileName}"
-      )
-
-      val fileOutputStream = FileOutputStream(destinationFile)
-      try {
-        fileOutputStream.write(android.R.attr.data)
       } catch (e: IOException) {
       } finally {
         fileOutputStream.close()

@@ -29,11 +29,16 @@ class MediaDiskCache(private val context: Context): CoroutineScope {
   private var videos = mutableListOf<Media>()
   private var snapshot: StatusesSnapshot? = null
 
-  fun add(key: String, file: File) {
-    fileHelper.writeFile(file, getCacheDir())
+  fun add(key: String, media: Media, nextAsyncTaskBlock: () -> Unit) {
+    val cacheDir = getCacheDir()
+    if (cacheDir != null) {
+      fileHelper.writeFile(media.file, cacheDir) {
+        nextAsyncTaskBlock()
+      }
+    }
   }
 
-  fun getCacheDir(): File = context.cacheDir
+  private fun getCacheDir(): File? = context.externalCacheDir
 
   fun getCacheSnapshot(): StatusesSnapshot {
     if (snapshot == null) {
