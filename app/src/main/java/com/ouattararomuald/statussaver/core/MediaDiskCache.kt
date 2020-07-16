@@ -32,7 +32,8 @@ class MediaDiskCache(private val context: Context): CoroutineScope {
   fun add(key: String, media: Media, nextAsyncTaskBlock: () -> Unit) {
     val cacheDir = getCacheDir()
     if (cacheDir != null) {
-      fileHelper.writeFile(media.file, cacheDir) {
+      val destinationFile = File(cacheDir, key)
+      fileHelper.writeFile(media.file, destinationFile) {
         nextAsyncTaskBlock()
       }
     }

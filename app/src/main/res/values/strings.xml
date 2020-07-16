@@ -4,13 +4,14 @@
   <string name="share_app_message">Try this Awesome App \'Status Snapshot\' which helps you save WhatsApp Statuses.\n\n%s</string>
   <string name="share_app_title">Share Status Snapshot App</string>
 
+  <string name="old_medias_fragment_title">Old statuses</string>
   <string name="images_fragment_title">Images</string>
   <string name="videos_fragment_title">Videos</string>
   <string name="title_activity_video_player">Video Player</string>
   <string name="clear_menu_item">Clear</string>
   <string name="share_menu_item">Share</string>
   <string name="send_to">Send to</string>
-  <string name="send_title">WhatsApp Statuses</string>
+  <string name="send_title">Status Snapshot</string>
   <string name="read_external_storage_rationale">Status Snapshot is unable to work without access to your storage. Enable access to your storage so we can save/discover statuses.</string>
   <string name="refresh_menu_item">Refresh</string>
   <string name="authorize_button_label">Authorize</string>

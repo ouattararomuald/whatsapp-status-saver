@@ -15,7 +15,11 @@ import org.threeten.bp.ZoneId
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class MediaRepository(context: Context): CoroutineScope {
+class MediaRepository(context: Context) : CoroutineScope {
+
+  companion object {
+    private const val STATUSES_MAX_CONSERVATION_DAYS = 3L
+  }
 
   private val databaseProvider = DatabaseProvider(context)
   private val mediaQueries = databaseProvider.mediaQueries
@@ -30,15 +34,25 @@ class MediaRepository(context: Context): CoroutineScope {
   private val handler = CoroutineExceptionHandler { _, exception ->
   }
 
+  fun isCacheEmpty(): Boolean = getNumberOfMediasInCache() <= 0
+
+  private fun getNumberOfMediasInCache(): Long {
+    return mediaQueries.countOldMedias(getOldestDate(), getToday()).executeAsOne()
+  }
+
   fun getAudios(): List<Media> {
-    return mediaQueries.getAudios().executeAsList()
+    return mediaQueries.getAudios(getOldestDate(), getToday()).executeAsList()
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
 
   fun getVideos(): List<Media> {
-    return mediaQueries.getVideos().executeAsList()
+    return mediaQueries.getVideos(getOldestDate(), getToday()).executeAsList()
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
+
+  private fun getOldestDate(): LocalDateTime = LocalDateTime.now().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+
+  private fun getToday(): LocalDateTime = LocalDateTime.now()
 
   fun saveMedias(medias: List<Media>) {
     launch(coroutineContext + handler) {

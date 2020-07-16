@@ -25,9 +25,6 @@ class FileHelper: CoroutineScope {
     get() = Dispatchers.IO + job
 
   private val handler = CoroutineExceptionHandler { _, exception ->
-    exception.message?.let {
-      Log.e("FILE_HELPER", it)
-    }
   }
 
   fun writeFile(sourceFile: File, destinationFolder: File, onFinishBlock: suspend CoroutineScope.() -> Unit) {

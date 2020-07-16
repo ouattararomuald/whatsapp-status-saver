@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
-import com.ouattararomuald.statussaver.common.ui.EmptyItem
 import com.ouattararomuald.statussaver.databinding.FragmentVideosBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.videos.adapters.VideoItem
@@ -111,7 +110,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
   }
 
   override fun onShareClicked() {
-    homeCommand?.shareImages(selectedMedia.keys.toList())
+    homeCommand?.shareVideos(selectedMedia.keys.toList())
   }
 
   override fun displayMedias(medias: List<Media>) {
@@ -127,5 +126,5 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     displayMedias(medias)
   }
 
-  private fun Media.toVideoItem(index: Int): VideoItem = VideoItem(this, index)
+  private fun Media.toVideoItem(position: Int): VideoItem = VideoItem(this, position)
 }
