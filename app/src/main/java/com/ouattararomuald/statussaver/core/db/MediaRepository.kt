@@ -50,7 +50,7 @@ class MediaRepository(context: Context) : CoroutineScope {
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
 
-  private fun getOldestDate(): LocalDateTime = LocalDateTime.now().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+  private fun getOldestDate(): LocalDateTime = getToday().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
 
   private fun getToday(): LocalDateTime = LocalDateTime.now()
 

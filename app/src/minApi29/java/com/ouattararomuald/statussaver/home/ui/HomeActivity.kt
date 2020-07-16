@@ -37,6 +37,8 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
   private var clearOptionMenuItem: MenuItem? = null
   private var refreshOptionMenuItem: MenuItem? = null
 
+  private var homePagesAdapter: HomePagesAdapter? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
     super.onCreate(savedInstanceState)
@@ -166,14 +168,34 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
     }
   }
 
+  override fun onResume() {
+    super.onResume()
+    presenter.onResumed()
+  }
+
   override fun getContext(): Context = this
 
-  override fun displayPages(pages: Array<Page>) {
-    binding.pager.adapter = HomePagesAdapter(pages, this)
-    tabLayoutMediator = TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
-      tab.text = pages[position].title
+  override fun onNewPageAvailable(page: Page) {
+    homePagesAdapter?.let {
+      it.addPage(page)
+      it.notifyItemInserted(it.itemCount - 1)
     }
-    tabLayoutMediator?.attach()
+  }
+
+  override fun displayPages(pages: Array<Page>) {
+    if (homePagesAdapter == null) {
+      homePagesAdapter = HomePagesAdapter(pages, this)
+    } else {
+      homePagesAdapter?.refresh(pages)
+    }
+
+    homePagesAdapter?.let {
+      binding.pager.adapter = it
+      tabLayoutMediator = TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
+        tab.text = pages[position].title
+      }
+      tabLayoutMediator?.attach()
+    }
   }
 
   override fun openChooserForIntent(shareIntent: Intent) {

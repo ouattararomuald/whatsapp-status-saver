@@ -30,6 +30,8 @@ class HomePresenter(
 
   private val mediaRepository = MediaRepository(context)
 
+  private var isCachedFragmentDisplayed = false
+
   private fun initializedPages() {
     if (mediaRepository.isCacheEmpty()) {
       pages = arrayOf(
@@ -42,6 +44,7 @@ class HomePresenter(
           fragment = VideoFragment.newInstance(statusesSnapshot?.videos ?: emptyList())
         )
       )
+      isCachedFragmentDisplayed = false
     } else {
       pages = arrayOf(
         Page(
@@ -60,6 +63,7 @@ class HomePresenter(
           )
         )
       )
+      isCachedFragmentDisplayed = true
     }
 
     pages.forEach { page ->
@@ -74,6 +78,19 @@ class HomePresenter(
           page.fragment.homeCommand = this
         }
       }
+    }
+  }
+
+  override fun onResumed() {
+    if (!isCachedFragmentDisplayed && !mediaRepository.isCacheEmpty()) {
+      view.onNewPageAvailable(Page(
+        title = context.getString(R.string.old_medias_fragment_title),
+        fragment = OldMediaFragment.newInstance(
+          mediaRepository.getAudios(),
+          mediaRepository.getVideos()
+        )
+      ))
+      isCachedFragmentDisplayed = true
     }
   }
 
