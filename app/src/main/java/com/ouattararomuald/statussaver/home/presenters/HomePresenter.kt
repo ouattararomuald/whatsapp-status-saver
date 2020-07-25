@@ -30,41 +30,24 @@ class HomePresenter(
 
   private val mediaRepository = MediaRepository(context)
 
-  private var isCachedFragmentDisplayed = false
-
   private fun initializedPages() {
-    if (mediaRepository.isCacheEmpty()) {
-      pages = arrayOf(
-        Page(
-          title = context.getString(R.string.images_fragment_title),
-          fragment = ImageFragment.newInstance(statusesSnapshot?.images ?: emptyList())
-        ),
-        Page(
-          title = context.getString(R.string.videos_fragment_title),
-          fragment = VideoFragment.newInstance(statusesSnapshot?.videos ?: emptyList())
+    pages = arrayOf(
+      Page(
+        title = context.getString(R.string.images_fragment_title),
+        fragment = ImageFragment.newInstance(statusesSnapshot?.images ?: emptyList())
+      ),
+      Page(
+        title = context.getString(R.string.videos_fragment_title),
+        fragment = VideoFragment.newInstance(statusesSnapshot?.videos ?: emptyList())
+      ),
+      Page(
+        title = context.getString(R.string.old_medias_fragment_title),
+        fragment = OldMediaFragment.newInstance(
+          mediaRepository.getAudios(),
+          mediaRepository.getVideos()
         )
       )
-      isCachedFragmentDisplayed = false
-    } else {
-      pages = arrayOf(
-        Page(
-          title = context.getString(R.string.images_fragment_title),
-          fragment = ImageFragment.newInstance(statusesSnapshot?.images ?: emptyList())
-        ),
-        Page(
-          title = context.getString(R.string.videos_fragment_title),
-          fragment = VideoFragment.newInstance(statusesSnapshot?.videos ?: emptyList())
-        ),
-        Page(
-          title = context.getString(R.string.old_medias_fragment_title),
-          fragment = OldMediaFragment.newInstance(
-            mediaRepository.getAudios(),
-            mediaRepository.getVideos()
-          )
-        )
-      )
-      isCachedFragmentDisplayed = true
-    }
+    )
 
     pages.forEach { page ->
       when (page.fragment) {
@@ -78,19 +61,6 @@ class HomePresenter(
           page.fragment.homeCommand = this
         }
       }
-    }
-  }
-
-  override fun onResumed() {
-    if (!isCachedFragmentDisplayed && !mediaRepository.isCacheEmpty()) {
-      view.onNewPageAvailable(Page(
-        title = context.getString(R.string.old_medias_fragment_title),
-        fragment = OldMediaFragment.newInstance(
-          mediaRepository.getAudios(),
-          mediaRepository.getVideos()
-        )
-      ))
-      isCachedFragmentDisplayed = true
     }
   }
 

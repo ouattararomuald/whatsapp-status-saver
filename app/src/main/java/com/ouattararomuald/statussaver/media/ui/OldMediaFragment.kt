@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.MediaType
+import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
+import com.ouattararomuald.statussaver.common.ui.EmptyItem
 import com.ouattararomuald.statussaver.common.ui.TitleItem
 import com.ouattararomuald.statussaver.databinding.FragmentOldMediasBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
@@ -48,11 +50,17 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
 
   private lateinit var gridLayoutManager: GridLayoutManager
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
-  private val imagesSection = Section()
-  private val videosSection = Section()
+  private val imagesSection = Section().apply {
+    this.setPlaceholder(EmptyItem(R.drawable.ic_no_data))
+  }
+  private val videosSection = Section().apply {
+    this.setPlaceholder(EmptyItem(R.drawable.ic_no_data))
+  }
 
   private val imageItems = mutableListOf<ImageItem>()
   private val videoItems = mutableListOf<VideoItem>()
+  private val isViewEmpty: Boolean
+    get() = imageItems.isEmpty() && videoItems.isEmpty()
 
   private var selectedItem: Item<*>? = null
   private var selectedMediaType: MediaType = MediaType.UNKNOWN
@@ -76,7 +84,7 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
 
     gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
       override fun getSpanSize(position: Int): Int {
-        return if (position in getTitleHeaderIndexes()) {
+        return if (position in getTitleHeaderIndexes() || isViewEmpty) {
           2
         } else {
           1

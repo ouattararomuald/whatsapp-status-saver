@@ -112,7 +112,7 @@ dependencies {
   implementation deps.exoplayer.core
   implementation deps.exoplayer.ui
 
-  implementation deps.coil
+  implementation deps.coil.core
 
   implementation deps.okio
 

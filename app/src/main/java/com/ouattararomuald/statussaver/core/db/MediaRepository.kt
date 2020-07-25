@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
@@ -37,22 +36,24 @@ class MediaRepository(context: Context) : CoroutineScope {
   fun isCacheEmpty(): Boolean = getNumberOfMediasInCache() <= 0
 
   private fun getNumberOfMediasInCache(): Long {
-    return mediaQueries.countOldMedias(getOldestDate(), getToday()).executeAsOne()
+    return mediaQueries.countOldMedias(getOldestDate(), getYesterdayDate()).executeAsOne()
   }
 
   fun getAudios(): List<Media> {
-    return mediaQueries.getAudios(getOldestDate(), getToday()).executeAsList()
+    return mediaQueries.getAudios(getOldestDate(), getYesterdayDate()).executeAsList()
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
 
   fun getVideos(): List<Media> {
-    return mediaQueries.getVideos(getOldestDate(), getToday()).executeAsList()
+    return mediaQueries.getVideos(getOldestDate(), getYesterdayDate()).executeAsList()
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
 
-  private fun getOldestDate(): LocalDateTime = getToday().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+  private fun getOldestDate(): LocalDateTime = getTodayDate().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
 
-  private fun getToday(): LocalDateTime = LocalDateTime.now()
+  private fun getYesterdayDate(): LocalDateTime = getTodayDate().minusDays(1)
+
+  private fun getTodayDate(): LocalDateTime = LocalDateTime.now()
 
   fun saveMedias(medias: List<Media>) {
     launch(coroutineContext + handler) {

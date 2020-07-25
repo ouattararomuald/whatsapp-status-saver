@@ -11,8 +11,6 @@ interface HomeContract {
   interface HomeView {
     fun getContext(): Context
 
-    fun onNewPageAvailable(page: Page)
-
     fun displayPages(pages: Array<Page>)
 
     fun openChooserForIntent(shareIntent: Intent)
@@ -23,8 +21,6 @@ interface HomeContract {
   }
 
   interface HomePresenter {
-    fun onResumed()
-
     fun refreshData()
 
     fun discoverStatuses()

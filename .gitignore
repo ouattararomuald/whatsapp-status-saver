@@ -1,4 +1,8 @@
 *.iml
+*.apk
+*.apks
+*.aab
+/app/minApi*/
 .gradle
 /local.properties
 /.idea/
