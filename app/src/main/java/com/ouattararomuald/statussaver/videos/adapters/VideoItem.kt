@@ -13,6 +13,7 @@ import coil.size.Scale
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.databinding.ViewVideoBinding
+import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,8 @@ class VideoItem(val media: Media, val position: Int) : BindableItem<ViewVideoBin
     private set
 
   override fun getLayout(): Int = R.layout.view_video
+
+  override fun getSpanSize(spanCount: Int, position: Int): Int = spanCount / 2
 
   override fun bind(viewBinding: ViewVideoBinding, position: Int) {
     selectorFrameLayout = viewBinding.selectorFrameLayout
@@ -65,6 +68,15 @@ class VideoItem(val media: Media, val position: Int) : BindableItem<ViewVideoBin
   fun toggleSelectionState() {
     isSelected = !isSelected
     selectorFrameLayout.isVisible = isSelected
+  }
+
+  override fun isSameAs(other: Item<*>): Boolean {
+    val otherVideoItem = other as VideoItem
+    return media.file == otherVideoItem.media.file && position == otherVideoItem.position
+  }
+
+  override fun hasSameContentAs(other: Item<*>): Boolean {
+    return media.file == (other as VideoItem).media.file
   }
 
   companion object {

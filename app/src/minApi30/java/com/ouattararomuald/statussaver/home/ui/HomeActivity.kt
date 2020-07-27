@@ -120,10 +120,6 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
 
   override fun getContext(): Context = this
 
-  override fun onNewPageAvailable(page: Page) {
-    TODO("Not yet implemented")
-  }
-
   override fun displayPages(pages: Array<Page>) {
     binding.pager.adapter = HomePagesAdapter(pages, this)
     tabLayoutMediator = TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->

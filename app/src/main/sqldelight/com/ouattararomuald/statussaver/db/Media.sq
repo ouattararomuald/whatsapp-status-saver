@@ -22,13 +22,13 @@ countMediaById:
 SELECT COUNT(*) AS NB FROM medias WHERE id = :id;
 
 countOldMedias:
-SELECT COUNT(*) AS NB FROM medias WHERE publishDate >= :minDate AND publishDate < :todayDate;
+SELECT COUNT(*) AS NB FROM medias WHERE publishDate >= :minDate AND publishDate < :yesterdayDate;
 
 getAudios:
-SELECT absolutePath, mediaType FROM medias WHERE publishDate >= :minDate AND publishDate < :todayDate AND mediaType = 'IMAGE' ORDER BY publishDate, saveDate DESC;
+SELECT absolutePath, mediaType FROM medias WHERE publishDate >= :minDate AND publishDate < :yesterdayDate AND mediaType = 'IMAGE' ORDER BY publishDate, saveDate DESC;
 
 getVideos:
-SELECT absolutePath, mediaType FROM medias WHERE publishDate >= :minDate AND publishDate < :todayDate AND mediaType = 'VIDEO' ORDER BY publishDate, saveDate DESC;
+SELECT absolutePath, mediaType FROM medias WHERE publishDate >= :minDate AND publishDate < :yesterdayDate AND mediaType = 'VIDEO' ORDER BY publishDate, saveDate DESC;
 
 deleteOldMedias:
 DELETE FROM medias WHERE publishDate < :olderThanDate;

@@ -7,7 +7,7 @@ import com.ouattararomuald.statussaver.db.Medias
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 
-class DatabaseProvider(private val context: Context) {
+class DatabaseProvider(context: Context) {
 
   private val localDateTimeAdapter = LocalDateTimeAdapter()
   private val driver: SqlDriver = AndroidSqliteDriver(Database.Schema, context, BuildConfig.DB_NAME)

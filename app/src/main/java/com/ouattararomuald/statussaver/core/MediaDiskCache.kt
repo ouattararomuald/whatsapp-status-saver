@@ -1,6 +1,7 @@
 package com.ouattararomuald.statussaver.core
 
 import android.content.Context
+import android.util.Log
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.statuses.StatusesSnapshot
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -29,12 +30,12 @@ class MediaDiskCache(private val context: Context): CoroutineScope {
   private var videos = mutableListOf<Media>()
   private var snapshot: StatusesSnapshot? = null
 
-  fun add(key: String, media: Media, nextAsyncTaskBlock: () -> Unit) {
+  fun add(key: String, media: Media, nextAsyncTaskBlock: (savedFilePath: String) -> Unit) {
     val cacheDir = getCacheDir()
     if (cacheDir != null) {
       val destinationFile = File(cacheDir, key)
       fileHelper.writeFile(media.file, destinationFile) {
-        nextAsyncTaskBlock()
+        nextAsyncTaskBlock(destinationFile.absolutePath)
       }
     }
   }

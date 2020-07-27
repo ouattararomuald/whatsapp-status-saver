@@ -1,14 +1,21 @@
 package com.ouattararomuald.statussaver.media.presenters
 
-import com.ouattararomuald.statussaver.Media
+import android.content.Context
+import com.ouattararomuald.statussaver.core.db.DbMediaDAO
+import com.ouattararomuald.statussaver.core.db.MediaDAO
 
 class MediaPresenter(
-  private val images: List<Media>,
-  private val videos: List<Media>,
+  context: Context,
   private val view: MediaContract.MediaView
 ) : MediaContract.MediaPresenter {
 
+  private val mediaDAO: MediaDAO = DbMediaDAO(context)
+
   override fun start() {
-    view.displayMedias(images, videos)
+    view.displayMedias(mediaDAO.getImages(), mediaDAO.getVideos())
+  }
+
+  override fun refresh() {
+    view.displayMedias(mediaDAO.getImages(), mediaDAO.getVideos())
   }
 }

@@ -3,6 +3,7 @@ package com.ouattararomuald.statussaver.core.db
 import android.content.Context
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.core.MediaDiskCache
+import com.ouattararomuald.statussaver.core.databaseProvider
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,13 +15,13 @@ import org.threeten.bp.ZoneId
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class MediaRepository(context: Context) : CoroutineScope {
+class DbMediaDAO(context: Context) : MediaDAO, CoroutineScope {
 
   companion object {
     private const val STATUSES_MAX_CONSERVATION_DAYS = 3L
   }
 
-  private val databaseProvider = DatabaseProvider(context)
+  private val databaseProvider = context.databaseProvider()
   private val mediaQueries = databaseProvider.mediaQueries
 
   private val mediaDiskCache = MediaDiskCache(context)
@@ -33,18 +34,18 @@ class MediaRepository(context: Context) : CoroutineScope {
   private val handler = CoroutineExceptionHandler { _, exception ->
   }
 
-  fun isCacheEmpty(): Boolean = getNumberOfMediasInCache() <= 0
+  override fun isCacheEmpty(): Boolean = getNumberOfMediasInCache() <= 0
 
   private fun getNumberOfMediasInCache(): Long {
     return mediaQueries.countOldMedias(getOldestDate(), getYesterdayDate()).executeAsOne()
   }
 
-  fun getAudios(): List<Media> {
+  override fun getImages(): List<Media> {
     return mediaQueries.getAudios(getOldestDate(), getYesterdayDate()).executeAsList()
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
 
-  fun getVideos(): List<Media> {
+  override fun getVideos(): List<Media> {
     return mediaQueries.getVideos(getOldestDate(), getYesterdayDate()).executeAsList()
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
@@ -55,15 +56,15 @@ class MediaRepository(context: Context) : CoroutineScope {
 
   private fun getTodayDate(): LocalDateTime = LocalDateTime.now()
 
-  fun saveMedias(medias: List<Media>) {
+  override fun saveMedias(medias: List<Media>) {
     launch(coroutineContext + handler) {
       medias.forEach { media ->
         val mediaId = "${MediaDiskCache.FILE_CACHE_PREFIX_NAME}.${media.file.name}"
         if (!mediaExists(mediaId)) {
-          mediaDiskCache.add(mediaId, media) {
+          mediaDiskCache.add(mediaId, media) { savedFilePath ->
             mediaQueries.insertMedia(
               mediaId,
-              media.file.absolutePath,
+              savedFilePath,
               media.mediaType,
               LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(media.file.lastModified()),

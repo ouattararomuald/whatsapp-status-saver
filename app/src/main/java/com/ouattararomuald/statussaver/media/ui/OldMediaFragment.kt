@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.MediaType
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Shareable
-import com.ouattararomuald.statussaver.common.Updatable
+import com.ouattararomuald.statussaver.common.UpdatableOldMedia
 import com.ouattararomuald.statussaver.common.ui.EmptyItem
 import com.ouattararomuald.statussaver.common.ui.TitleItem
 import com.ouattararomuald.statussaver.databinding.FragmentOldMediasBinding
@@ -27,22 +26,11 @@ import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import com.xwray.groupie.Section
 
-class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatable {
+class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, UpdatableOldMedia {
 
   companion object {
-    private const val IMAGES_KEY = "images_key"
-    private const val VIDEOS_KEY = "videos_key"
-
     @JvmStatic
-    fun newInstance(images: List<Media>, videos: List<Media>): OldMediaFragment {
-      val bundle = bundleOf(
-        IMAGES_KEY to images,
-        VIDEOS_KEY to videos
-      )
-      return OldMediaFragment().apply {
-        arguments = bundle
-      }
-    }
+    fun newInstance(): OldMediaFragment = OldMediaFragment()
   }
 
   private lateinit var binding: FragmentOldMediasBinding
@@ -50,17 +38,11 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
 
   private lateinit var gridLayoutManager: GridLayoutManager
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
-  private val imagesSection = Section().apply {
-    this.setPlaceholder(EmptyItem(R.drawable.ic_no_data))
-  }
-  private val videosSection = Section().apply {
-    this.setPlaceholder(EmptyItem(R.drawable.ic_no_data))
-  }
+  private val imagesSection = Section()
+  private val videosSection = Section()
 
   private val imageItems = mutableListOf<ImageItem>()
   private val videoItems = mutableListOf<VideoItem>()
-  private val isViewEmpty: Boolean
-    get() = imageItems.isEmpty() && videoItems.isEmpty()
 
   private var selectedItem: Item<*>? = null
   private var selectedMediaType: MediaType = MediaType.UNKNOWN
@@ -75,27 +57,16 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     binding = FragmentOldMediasBinding.inflate(layoutInflater, container, false)
     val view = binding.root
     presenter = MediaPresenter(
-      arguments?.getParcelableArrayList(IMAGES_KEY) ?: emptyList(),
-      arguments?.getParcelableArrayList(VIDEOS_KEY) ?: emptyList(),
-      this
+        context!!,
+        this
     )
     groupAdapter = GroupAdapter()
-    gridLayoutManager = GridLayoutManager(context, 2)
-
-    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-      override fun getSpanSize(position: Int): Int {
-        return if (position in getTitleHeaderIndexes() || isViewEmpty) {
-          2
-        } else {
-          1
-        }
-      }
+    groupAdapter.spanCount = 2
+    gridLayoutManager = GridLayoutManager(context, groupAdapter.spanCount).apply {
+      spanSizeLookup = groupAdapter.spanSizeLookup
     }
 
-    groupAdapter.add(TitleItem("Images"))
-    groupAdapter.add(imagesSection)
-    groupAdapter.add(TitleItem("Videos"))
-    groupAdapter.add(videosSection)
+    populateAdapter()
 
     binding.mediasRecyclerView.apply {
       layoutManager = gridLayoutManager
@@ -146,9 +117,20 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
       true
     }
 
-    presenter.start()
-
     return view
+  }
+
+  private fun populateAdapter() {
+    groupAdapter.apply {
+      add(Section(TitleItem("Images")).apply {
+        add(imagesSection)
+        setPlaceholder(EmptyItem(R.drawable.ic_no_data))
+      })
+      add(Section(TitleItem("Videos")).apply {
+        add(videosSection)
+        setPlaceholder(EmptyItem(R.drawable.ic_no_data))
+      })
+    }
   }
 
   private fun Item<*>.changeSelectionState() {
@@ -170,6 +152,7 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
   override fun onResume() {
     super.onResume()
     homeCommand?.setCurrentView(this)
+    presenter.refresh()
   }
 
   override fun onPause() {
@@ -198,20 +181,17 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     }
   }
 
-  override fun onUpdateData(medias: List<Media>) {
-    TODO("Not yet implemented")
+  override fun onUpdateData(images: List<Media>, videos: List<Media>) {
+    displayMedias(images, videos)
   }
 
   override fun displayMedias(images: List<Media>, videos: List<Media>) {
-    if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
-      imageItems.addAll(images.mapIndexed { index, media -> media.toImageItem(index) })
-    }
-    imagesSection.addAll(imageItems)
-
-    if (videoItems.isEmpty()) { //FIXME: Verify both lists are different.
-      videoItems.addAll(videos.mapIndexed { index, media -> media.toVideoItem(index) })
-    }
-    videosSection.addAll(videoItems)
+    val imageMediaItems = images.mapIndexed { index, media -> media.toImageItem(index) }
+    val videoMediaItems = videos.mapIndexed { index, media -> media.toVideoItem(index) }
+    imageItems.addAll(imageMediaItems)
+    videoItems.addAll(videoMediaItems)
+    imagesSection.update(imageMediaItems)
+    videosSection.update(videoMediaItems)
   }
 
   private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position)

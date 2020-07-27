@@ -9,7 +9,9 @@ import com.ouattararomuald.statussaver.BuildConfig
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Updatable
-import com.ouattararomuald.statussaver.core.db.MediaRepository
+import com.ouattararomuald.statussaver.common.UpdatableOldMedia
+import com.ouattararomuald.statussaver.core.db.DbMediaDAO
+import com.ouattararomuald.statussaver.core.db.MediaDAO
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.images.ui.ImageFragment
 import com.ouattararomuald.statussaver.media.ui.OldMediaFragment
@@ -28,7 +30,7 @@ class HomePresenter(
 
   private var currentFragment: Fragment? = null
 
-  private val mediaRepository = MediaRepository(context)
+  private val mediaDAO: MediaDAO = DbMediaDAO(context)
 
   private fun initializedPages() {
     pages = arrayOf(
@@ -42,10 +44,7 @@ class HomePresenter(
       ),
       Page(
         title = context.getString(R.string.old_medias_fragment_title),
-        fragment = OldMediaFragment.newInstance(
-          mediaRepository.getAudios(),
-          mediaRepository.getVideos()
-        )
+        fragment = OldMediaFragment.newInstance()
       )
     )
 
@@ -101,13 +100,16 @@ class HomePresenter(
       if (page.fragment is Updatable) {
         page.fragment.onUpdateData(medias)
       }
+      if (page.fragment is UpdatableOldMedia) {
+        page.fragment.onUpdateData(mediaDAO.getImages(), mediaDAO.getVideos())
+      }
     }
   }
 
   private fun saveStatuses() {
     statusesSnapshot?.let {
-      mediaRepository.saveMedias(it.images)
-      mediaRepository.saveMedias(it.videos)
+      mediaDAO.saveMedias(it.images)
+      mediaDAO.saveMedias(it.videos)
     }
   }
 

@@ -53,18 +53,12 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     val view = binding.root
     presenter = ImagePresenter(arguments?.getParcelableArrayList(IMAGES_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
+    groupAdapter.spanCount = 2
     //section.setPlaceholder(EmptyItem())
 
-    gridLayoutManager = GridLayoutManager(context, 2)
-    /*gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-      override fun getSpanSize(position: Int): Int {
-        return if (position == 0 || position > imageItems.size) {
-          2
-        } else {
-          1
-        }
-      }
-    }*/
+    gridLayoutManager = GridLayoutManager(context, groupAdapter.spanCount).apply {
+      spanSizeLookup = groupAdapter.spanSizeLookup
+    }
 
     groupAdapter.add(section)
 
@@ -128,15 +122,13 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
   }
 
   override fun displayMedias(medias: List<Media>) {
-    if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
-      imageItems.addAll(medias.mapIndexed { index, media -> media.toImageItem(index) })
-    }
-    section.addAll(imageItems)
+    val items = medias.mapIndexed { index, media -> media.toImageItem(index) }
+    imageItems.clear()
+    imageItems.addAll(items)
+    section.update(items)
   }
 
   override fun onUpdateData(medias: List<Media>) {
-    imageItems.clear()
-    section.clear()
     displayMedias(medias)
   }
 
