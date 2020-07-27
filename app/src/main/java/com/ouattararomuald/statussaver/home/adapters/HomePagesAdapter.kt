@@ -9,6 +9,7 @@ class HomePagesAdapter(
   private val pages: Array<Page>,
   fragmentActivity: FragmentActivity
 ) : FragmentStateAdapter(fragmentActivity) {
+
   override fun getItemCount(): Int = pages.size
 
   override fun createFragment(position: Int): Fragment = pages[position].fragment

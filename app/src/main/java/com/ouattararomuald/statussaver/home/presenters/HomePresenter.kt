@@ -9,8 +9,12 @@ import com.ouattararomuald.statussaver.BuildConfig
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Updatable
+import com.ouattararomuald.statussaver.common.UpdatableOldMedia
+import com.ouattararomuald.statussaver.core.db.DbMediaDAO
+import com.ouattararomuald.statussaver.core.db.MediaDAO
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.images.ui.ImageFragment
+import com.ouattararomuald.statussaver.media.ui.OldMediaFragment
 import com.ouattararomuald.statussaver.statuses.StatusFinder
 import com.ouattararomuald.statussaver.statuses.StatusesSnapshot
 import com.ouattararomuald.statussaver.videos.ui.VideoFragment
@@ -26,6 +30,8 @@ class HomePresenter(
 
   private var currentFragment: Fragment? = null
 
+  private val mediaDAO: MediaDAO = DbMediaDAO(context)
+
   private fun initializedPages() {
     pages = arrayOf(
       Page(
@@ -35,13 +41,24 @@ class HomePresenter(
       Page(
         title = context.getString(R.string.videos_fragment_title),
         fragment = VideoFragment.newInstance(statusesSnapshot?.videos ?: emptyList())
+      ),
+      Page(
+        title = context.getString(R.string.old_medias_fragment_title),
+        fragment = OldMediaFragment.newInstance()
       )
     )
+
     pages.forEach { page ->
-      if (page.fragment is ImageFragment) {
-        page.fragment.homeCommand = this
-      } else if (page.fragment is VideoFragment) {
-        page.fragment.homeCommand = this
+      when (page.fragment) {
+        is ImageFragment -> {
+          page.fragment.homeCommand = this
+        }
+        is VideoFragment -> {
+          page.fragment.homeCommand = this
+        }
+        is OldMediaFragment -> {
+          page.fragment.homeCommand = this
+        }
       }
     }
   }
@@ -49,6 +66,8 @@ class HomePresenter(
   override fun discoverStatuses() {
     statusFinder.findStatuses()
     statusesSnapshot = statusFinder.getSnapshot()
+
+    saveStatuses()
 
     initializedPages()
 
@@ -58,6 +77,8 @@ class HomePresenter(
   override fun refreshData() {
     statusFinder.findStatuses()
     statusesSnapshot = statusFinder.getSnapshot()
+
+    saveStatuses()
 
     if (!::pages.isInitialized) {
       return
@@ -79,6 +100,16 @@ class HomePresenter(
       if (page.fragment is Updatable) {
         page.fragment.onUpdateData(medias)
       }
+      if (page.fragment is UpdatableOldMedia) {
+        page.fragment.onUpdateData(mediaDAO.getImages(), mediaDAO.getVideos())
+      }
+    }
+  }
+
+  private fun saveStatuses() {
+    statusesSnapshot?.let {
+      mediaDAO.saveMedias(it.images)
+      mediaDAO.saveMedias(it.videos)
     }
   }
 
@@ -128,7 +159,8 @@ class HomePresenter(
     if (medias.isEmpty()) {
       view.openChooserForIntent(getShareAppIntent())
     } else {
-      view.openChooserForIntent(getMediasShareIntent(medias, VIDEO_MIME_TYPE))
+      //FIXME: Should be VIDEO_MIME_TYPE but it's doesn't allow to share with all apps
+      view.openChooserForIntent(getMediasShareIntent(medias, IMAGE_MIME_TYPE))
     }
   }
 
@@ -136,7 +168,13 @@ class HomePresenter(
     val sendIntent: Intent = Intent().apply {
       action = Intent.ACTION_SEND
       putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.share_app_title))
-      putExtra(Intent.EXTRA_TEXT, context.resources.getString(R.string.share_app_message, "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"))
+      putExtra(
+        Intent.EXTRA_TEXT,
+        context.resources.getString(
+          R.string.share_app_message,
+          "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+        )
+      )
       type = "text/plain"
     }
 

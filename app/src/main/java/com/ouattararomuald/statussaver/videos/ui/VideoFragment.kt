@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
-import com.ouattararomuald.statussaver.common.ui.EmptyItem
 import com.ouattararomuald.statussaver.databinding.FragmentVideosBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.videos.adapters.VideoItem
@@ -53,11 +52,14 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     val view = binding.root
     presenter = VideoPresenter(arguments?.getParcelableArrayList(VideoFragment.VIDEOS_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
+    groupAdapter.spanCount = 2
     //section.setPlaceholder(EmptyItem())
 
     groupAdapter.add(section)
     binding.imagesRecyclerView.apply {
-      layoutManager = GridLayoutManager(context, 2)
+      layoutManager = GridLayoutManager(context, groupAdapter.spanCount).apply {
+        spanSizeLookup = groupAdapter.spanSizeLookup
+      }
       adapter = groupAdapter
       setHasFixedSize(true)
     }
@@ -111,21 +113,19 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
   }
 
   override fun onShareClicked() {
-    homeCommand?.shareImages(selectedMedia.keys.toList())
+    homeCommand?.shareVideos(selectedMedia.keys.toList())
   }
 
   override fun displayMedias(medias: List<Media>) {
-    if (videoItems.isEmpty()) { //FIXME: Verify both lists are different.
-      videoItems.addAll(medias.mapIndexed { index, media ->  media.toVideoItem(index) })
-    }
-    section.addAll(videoItems)
+    val items = medias.mapIndexed { index, media ->  media.toVideoItem(index) }
+    videoItems.clear()
+    videoItems.addAll(items)
+    section.update(items)
   }
 
   override fun onUpdateData(medias: List<Media>) {
-    videoItems.clear()
-    section.clear()
     displayMedias(medias)
   }
 
-  private fun Media.toVideoItem(index: Int): VideoItem = VideoItem(this, index)
+  private fun Media.toVideoItem(position: Int): VideoItem = VideoItem(this, position)
 }

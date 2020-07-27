@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sectionTitleTextView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/section_title_margin"
+    android:textColor="@color/section_title_color"
+    android:textStyle="bold"
+    tools:text="Section Title"
+    tools:textColor="@color/section_title_color"
+    tools:textStyle="bold"
+    app:textAllCaps="true" />

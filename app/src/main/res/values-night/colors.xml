@@ -34,6 +34,7 @@
   <color name="empty_layout_background_color">@color/off_black</color>
 
   <color name="drawable_tint_color">@color/orange_500</color>
+  <color name="section_title_color">@color/drawable_tint_color</color>
 
   <color name="tab_background_color">@color/off_black</color>
   <color name="tab_text_color">@color/white</color>

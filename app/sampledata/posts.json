@@ -1,0 +1,27 @@
+{
+  "comment": "Posts data - posts.json",
+  "items": [
+    {
+      "id": 122595,
+      "date": "2020-02-04T20:04:40",
+      "title": {
+        "rendered": "L&#8217;\u00e9pouse de Bob Marley, Rita, a \u00e9t\u00e9 touch\u00e9e par une balle \u00e0 la t\u00eate, lors d&#8217;une tentative d&#8217;assassinat. Cependant, ses dreadlocks \u00e9taient si \u00e9paisses qu&#8217;elles lui ont sauv\u00e9 la vie."
+      },
+      "content": {
+        "rendered": "@sample/posts"
+      },
+      "categories": []
+    },
+    {
+      "id": 122596,
+      "date": "2020-01-31T16:02:27",
+      "title": {
+        "rendered": "Au Japon, les canettes de bi\u00e8re ont l&#8217;inscription &#8220;alcool&#8221; \u00e9crit en braille sur le dessus, pour \u00e9viter aux non-voyants d&#8217;acheter de la bi\u00e8re accidentellement."
+      },
+      "content": {
+        "rendered": "@sample/posts"
+      },
+      "categories": []
+    }
+  ]
+}

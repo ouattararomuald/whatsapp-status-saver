@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
-import com.ouattararomuald.statussaver.common.ui.EmptyItem
 import com.ouattararomuald.statussaver.databinding.FragmentImagesBinding
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.images.adapters.ImageItem
@@ -40,6 +39,7 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
   lateinit var presenter: ImagePresenter
   private lateinit var groupAdapter: GroupAdapter<GroupieViewHolder>
   private val section = Section()
+  private lateinit var gridLayoutManager: GridLayoutManager
 
   private val selectedMedia: MutableMap<Media, ImageItem> = mutableMapOf()
   private val imageItems = mutableListOf<ImageItem>()
@@ -53,11 +53,17 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     val view = binding.root
     presenter = ImagePresenter(arguments?.getParcelableArrayList(IMAGES_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
+    groupAdapter.spanCount = 2
     //section.setPlaceholder(EmptyItem())
 
+    gridLayoutManager = GridLayoutManager(context, groupAdapter.spanCount).apply {
+      spanSizeLookup = groupAdapter.spanSizeLookup
+    }
+
     groupAdapter.add(section)
+
     binding.imagesRecyclerView.apply {
-      layoutManager = GridLayoutManager(context, 2)
+      layoutManager = gridLayoutManager
       adapter = groupAdapter
       setHasFixedSize(true)
     }
@@ -116,15 +122,13 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
   }
 
   override fun displayMedias(medias: List<Media>) {
-    if (imageItems.isEmpty()) { //FIXME: Verify both lists are different.
-      imageItems.addAll(medias.mapIndexed { index, media -> media.toImageItem(index) })
-    }
-    section.addAll(imageItems)
+    val items = medias.mapIndexed { index, media -> media.toImageItem(index) }
+    imageItems.clear()
+    imageItems.addAll(items)
+    section.update(items)
   }
 
   override fun onUpdateData(medias: List<Media>) {
-    imageItems.clear()
-    section.clear()
     displayMedias(medias)
   }
 

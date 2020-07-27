@@ -4,9 +4,11 @@ plugins {
   id 'kotlin-android-extensions'
 }
 
+apply plugin: 'com.squareup.sqldelight'
+
 android {
   compileSdkVersion 30
-  buildToolsVersion "30.0.0"
+  buildToolsVersion "30.0.1"
 
   defaultConfig {
     applicationId "com.ouattararomuald.statussaver"
@@ -33,16 +35,22 @@ android {
   }
 
   buildTypes {
+    def DB_NAME = "DB_NAME"
+
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
       manifestPlaceholders.fileProvider = "com.ouattararomuald.statussaver.fileprovider"
+
+      buildConfigField "String", DB_NAME, "\"status-snap.db\""
     }
 
     debug {
       applicationIdSuffix ".debug"
       debuggable true
       manifestPlaceholders.fileProvider = "com.ouattararomuald.statussaver.debug.fileprovider"
+
+      buildConfigField "String", DB_NAME, "\"status-snap-debug.db\""
     }
   }
 
@@ -95,10 +103,16 @@ dependencies {
 
   implementation deps.coroutines.android
 
+  implementation deps.stetho
+
+  implementation deps.sqldelight
+
+  implementation deps.threetenabp
+
   implementation deps.exoplayer.core
   implementation deps.exoplayer.ui
 
-  implementation deps.coil
+  implementation deps.coil.core
 
   implementation deps.okio
 

@@ -32,6 +32,7 @@
   <color name="empty_layout_background_color">@color/off_white</color>
 
   <color name="drawable_tint_color">@color/teal_700</color>
+  <color name="section_title_color">@color/drawable_tint_color</color>
 
   <color name="tab_background_color">@color/off_white</color>
   <color name="tab_text_color">@color/black</color>
