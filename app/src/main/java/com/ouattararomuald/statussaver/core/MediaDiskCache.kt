@@ -1,13 +1,14 @@
 package com.ouattararomuald.statussaver.core
 
 import android.content.Context
-import android.util.Log
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.db.GetOldMedias
 import com.ouattararomuald.statussaver.statuses.StatusesSnapshot
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
@@ -47,5 +48,9 @@ class MediaDiskCache(private val context: Context): CoroutineScope {
       snapshot = StatusesSnapshot(images, videos)
     }
     return StatusesSnapshot(images, videos)
+  }
+
+  fun deleteOldMedias(oldMedias: List<GetOldMedias>, onFinishBlock: suspend CoroutineScope.(mediaToDeleteId: String) -> Unit) {
+    fileHelper.deleteMedias(oldMedias, onFinishBlock)
   }
 }

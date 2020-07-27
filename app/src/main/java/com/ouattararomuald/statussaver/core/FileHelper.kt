@@ -3,6 +3,7 @@ package com.ouattararomuald.statussaver.core
 import android.os.Environment
 import android.util.Log
 import com.ouattararomuald.statussaver.common.SAVED_MEDIA_DESTINATION_FOLDER_NAME
+import com.ouattararomuald.statussaver.db.GetOldMedias
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,17 @@ class FileHelper: CoroutineScope {
     get() = Dispatchers.IO + job
 
   private val handler = CoroutineExceptionHandler { _, exception ->
+  }
+
+  fun deleteMedias(oldMedias: List<GetOldMedias>, onFinishBlock: suspend CoroutineScope.(mediaToDeleteId: String) -> Unit) {
+    launch(coroutineContext + handler) {
+      oldMedias.map { media ->
+        val file = File(media.absolutePath)
+        if (file.exists() && file.delete()) {
+          onFinishBlock(media.id)
+        }
+      }
+    }
   }
 
   fun writeFile(sourceFile: File, destinationFolder: File, onFinishBlock: suspend CoroutineScope.() -> Unit) {

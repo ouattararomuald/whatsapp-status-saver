@@ -30,5 +30,11 @@ SELECT absolutePath, mediaType FROM medias WHERE publishDate >= :minDate AND pub
 getVideos:
 SELECT absolutePath, mediaType FROM medias WHERE publishDate >= :minDate AND publishDate < :yesterdayDate AND mediaType = 'VIDEO' ORDER BY publishDate, saveDate DESC;
 
+getOldMedias:
+SELECT id, absolutePath FROM medias WHERE publishDate < :olderThanDate;
+
+deleteMediaById:
+DELETE FROM medias WHERE id = :id;
+
 deleteOldMedias:
 DELETE FROM medias WHERE publishDate < :olderThanDate;

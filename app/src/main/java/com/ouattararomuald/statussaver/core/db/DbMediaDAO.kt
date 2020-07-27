@@ -4,6 +4,7 @@ import android.content.Context
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.core.MediaDiskCache
 import com.ouattararomuald.statussaver.core.databaseProvider
+import com.ouattararomuald.statussaver.db.GetOldMedias
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,20 @@ class DbMediaDAO(context: Context) : MediaDAO, CoroutineScope {
     get() = Dispatchers.IO + job
 
   private val handler = CoroutineExceptionHandler { _, exception ->
+  }
+
+  init {
+    deleteOldMedias()
+  }
+
+  private fun deleteOldMedias() {
+    val oldestData = getOldestDate()
+    val oldMedias: List<GetOldMedias> = mediaQueries.getOldMedias(oldestData).executeAsList()
+    mediaDiskCache.deleteOldMedias(oldMedias) { mediaToDeleteId ->
+      launch(coroutineContext + handler) {
+        mediaQueries.deleteMediaById(mediaToDeleteId)
+      }
+    }
   }
 
   override fun isCacheEmpty(): Boolean = getNumberOfMediasInCache() <= 0
