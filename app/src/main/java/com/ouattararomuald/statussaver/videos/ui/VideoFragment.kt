@@ -117,7 +117,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
   }
 
   override fun onSaveClicked() {
-    homeCommand?.saveVideos(selectedMedia.keys.toList())
+    homeCommand?.saveFiles(selectedMedia.keys.toList())
   }
 
   override fun displayMedias(medias: List<Media>) {

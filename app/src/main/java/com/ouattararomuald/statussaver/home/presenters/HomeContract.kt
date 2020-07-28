@@ -43,10 +43,8 @@ interface HomeContract {
 
     fun shareImages(medias: List<Media>)
 
-    fun saveImages(medias: List<Media>)
+    fun saveFiles(medias: List<Media>)
 
     fun shareVideos(medias: List<Media>)
-
-    fun saveVideos(medias: List<Media>)
   }
 }

@@ -167,7 +167,7 @@ class HomePresenter(
     }
   }
 
-  override fun saveImages(medias: List<Media>) {
+  override fun saveFiles(medias: List<Media>) {
     view.saveFiles(medias)
   }
 
@@ -178,10 +178,6 @@ class HomePresenter(
       //FIXME: Should be VIDEO_MIME_TYPE but it's doesn't allow to share with all apps
       view.openChooserForIntent(getMediasShareIntent(medias, IMAGE_MIME_TYPE))
     }
-  }
-
-  override fun saveVideos(medias: List<Media>) {
-    view.saveFiles(medias)
   }
 
   private fun getShareAppIntent(): Intent {

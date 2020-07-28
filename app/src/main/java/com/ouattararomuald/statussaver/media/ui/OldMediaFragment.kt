@@ -84,28 +84,10 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     }
 
     groupAdapter.setOnItemLongClickListener { item, _ ->
-      when (item) {
-        is ImageItem -> {
-          selectedItem?.changeSelectionState()
-          item.toggleSelectionState()
-          selectedItem = item
-          selectedMediaType = MediaType.IMAGE
-          if (!item.isSelected) {
-            selectedItem = null
-          }
-        }
-        is VideoItem -> {
-          selectedItem?.changeSelectionState()
-          item.toggleSelectionState()
-          selectedItem = item
-          selectedMediaType = MediaType.VIDEO
-          if (!item.isSelected) {
-            selectedItem = null
-          }
-        }
-        else -> {
-          selectedMediaType = MediaType.UNKNOWN
-        }
+      if (selectedItem == item) {
+        changeCurrentSelectionVisualState()
+      } else {
+        changeSelectionVisualState(item)
       }
 
       if (selectedItem == null) {
@@ -118,6 +100,56 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     }
 
     return view
+  }
+
+  private fun changeCurrentSelectionVisualState() {
+    selectedItem?.let {
+      when (it) {
+        is ImageItem -> {
+          it.changeSelectionState()
+          if (!it.isSelected) {
+            selectedItem = null
+          }
+        }
+        is VideoItem -> {
+          it.changeSelectionState()
+          if (!it.isSelected) {
+            selectedItem = null
+          }
+        }
+        else -> {
+          selectedItem = null
+          selectedMediaType = MediaType.UNKNOWN
+        }
+      }
+    }
+  }
+
+  private fun changeSelectionVisualState(newItem: Item<*>) {
+    when (newItem) {
+      is ImageItem -> {
+        selectedItem?.changeSelectionState()
+        newItem.toggleSelectionState()
+        selectedItem = newItem
+        selectedMediaType = MediaType.IMAGE
+        if (!newItem.isSelected) {
+          selectedItem = null
+        }
+      }
+      is VideoItem -> {
+        selectedItem?.changeSelectionState()
+        newItem.toggleSelectionState()
+        selectedItem = newItem
+        selectedMediaType = MediaType.VIDEO
+        if (!newItem.isSelected) {
+          selectedItem = null
+        }
+      }
+      else -> {
+        selectedItem = null
+        selectedMediaType = MediaType.UNKNOWN
+      }
+    }
   }
 
   private fun populateAdapter() {
@@ -140,14 +172,6 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
       this.toggleSelectionState()
     }
   }
-
-  private fun getTitleHeaderIndexes(): Set<Int> {
-    return setOf(getImagesSectionTitleIndex(), getVideosSectionTitleIndex())
-  }
-
-  private fun getImagesSectionTitleIndex() = 0
-
-  private fun getVideosSectionTitleIndex() = imageItems.size + 1
 
   override fun onResume() {
     super.onResume()
@@ -182,7 +206,7 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
   }
 
   override fun onSaveClicked() {
-    TODO("Not yet implemented")
+    homeCommand?.saveFiles(imageItems.map { it.media } + videoItems.map { it.media })
   }
 
   override fun onUpdateData(images: List<Media>, videos: List<Media>) {
