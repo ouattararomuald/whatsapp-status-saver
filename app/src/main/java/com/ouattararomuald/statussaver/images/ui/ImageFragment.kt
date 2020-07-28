@@ -122,7 +122,7 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
   }
 
   override fun onSaveClicked() {
-    homeCommand?.saveImages(selectedMedia.keys.toList())
+    homeCommand?.saveFiles(selectedMedia.keys.toList())
   }
 
   override fun displayMedias(medias: List<Media>) {
