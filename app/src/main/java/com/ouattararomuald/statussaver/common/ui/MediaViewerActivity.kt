@@ -100,7 +100,7 @@ abstract class MediaViewerActivity : AppCompatActivity() {
   private fun displaySuccessMessage() {
     Snackbar.make(
       getRootView(),
-      "The file has been successfully saved.",
+      getString(R.string.file_successfully_saved_message),
       Snackbar.LENGTH_LONG
     ).setTextColor(resources.getColor(R.color.snackbar_text_color, theme)).show()
   }
@@ -108,7 +108,7 @@ abstract class MediaViewerActivity : AppCompatActivity() {
   private fun displayFailureMessage() {
     Snackbar.make(
       getRootView(),
-      "Oups! Something went wrong while saving the file.",
+      getString(R.string.file_save_failure_message),
       Snackbar.LENGTH_LONG
     ).setTextColor(resources.getColor(R.color.snackbar_text_color_failure, theme)).show()
   }

@@ -4,6 +4,10 @@
   <string name="share_app_message">Try this Awesome App \'Status Snapshot\' which helps you save WhatsApp Statuses.\n\n%s</string>
   <string name="share_app_title">Share Status Snapshot App</string>
 
+  <string name="shared_preferences_key">com.ouattararomuald.statussaver.PREF_FILE_KEY</string>
+  <string name="save_dir_key">SAVE_DIR</string>
+
+  <string name="old_medias_fragment_title">Old statuses</string>
   <string name="images_fragment_title">Images</string>
   <string name="videos_fragment_title">Videos</string>
   <string name="title_activity_video_player">Video Player</string>
@@ -19,5 +23,5 @@
   <string name="share_image">Share image</string>
   <string name="share_video">Share video</string>
   <string name="file_successfully_saved_message">The file has been successfully saved.</string>
-  <string name="file_save_failure_message">Oups! Something went wrong while saving the file..</string>
+  <string name="file_save_failure_message">Oups! Something went wrong while saving the file.</string>
 </resources>

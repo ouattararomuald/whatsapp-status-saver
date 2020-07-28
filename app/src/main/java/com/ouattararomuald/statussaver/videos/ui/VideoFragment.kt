@@ -116,6 +116,10 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     homeCommand?.shareVideos(selectedMedia.keys.toList())
   }
 
+  override fun onSaveClicked() {
+    homeCommand?.saveVideos(selectedMedia.keys.toList())
+  }
+
   override fun displayMedias(medias: List<Media>) {
     val items = medias.mapIndexed { index, media ->  media.toVideoItem(index) }
     videoItems.clear()

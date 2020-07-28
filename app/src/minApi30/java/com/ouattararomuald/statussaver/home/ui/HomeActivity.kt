@@ -11,18 +11,22 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
+import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
+import com.ouattararomuald.statussaver.core.FileHelper
 import com.ouattararomuald.statussaver.databinding.ActivityHomeBinding
 import com.ouattararomuald.statussaver.home.adapters.HomePagesAdapter
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.home.presenters.HomePresenter
+import kotlin.math.abs
 
 class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
 
   companion object {
-    private const val RC_MANAGE_ALL_FILES_ACCESS = 0xface
+    private const val MANAGE_ALL_FILES_ACCESS_REQ_CODE = 0xface
   }
 
   private lateinit var binding: ActivityHomeBinding
@@ -32,7 +36,10 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
   lateinit var presenter: HomeContract.HomePresenter
 
   private var clearOptionMenuItem: MenuItem? = null
+  private var saveOptionMenuItem: MenuItem? = null
   private var refreshOptionMenuItem: MenuItem? = null
+
+  private var fileHelper = FileHelper()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -77,7 +84,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
 
-    if (requestCode == RC_MANAGE_ALL_FILES_ACCESS && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    if (requestCode == MANAGE_ALL_FILES_ACCESS_REQ_CODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       displayViewBasedOnAuthorizations()
     }
   }
@@ -87,7 +94,7 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
   private fun requestPermissions() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-      startActivityForResult(intent, RC_MANAGE_ALL_FILES_ACCESS)
+      startActivityForResult(intent, MANAGE_ALL_FILES_ACCESS_REQ_CODE)
     }
   }
 
@@ -95,8 +102,9 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
     val inflater: MenuInflater = menuInflater
     inflater.inflate(R.menu.home, menu)
     if (menu != null) {
-      clearOptionMenuItem = menu.getItem(0)
-      refreshOptionMenuItem = menu.getItem(2)
+      clearOptionMenuItem = menu.findItem(R.id.clear_item)
+      saveOptionMenuItem = menu.findItem(R.id.save_item)
+      refreshOptionMenuItem = menu.findItem(R.id.refresh_item)
       refreshOptionMenuItem?.isEnabled = hasRequiredPermissions()
     }
     return true
@@ -136,9 +144,47 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView {
 
   override fun hideClearOptionMenu() {
     clearOptionMenuItem?.isVisible = false
+    saveOptionMenuItem?.isVisible = false
   }
 
   override fun showClearOptionMenu() {
     clearOptionMenuItem?.isVisible = true
+    saveOptionMenuItem?.isVisible = true
+  }
+
+  override fun saveFiles(medias: List<Media>) {
+    val files = medias.map { it.file }
+    fileHelper.writeFiles(files) { numberOfSuccess ->
+      val numberOfFails = abs(files.size - numberOfSuccess)
+
+      if (numberOfSuccess == files.size - 1) {
+        displaySuccessMessage(numberOfSuccess)
+      } else {
+        if (numberOfSuccess > 0) {
+          displaySuccessMessage(numberOfSuccess)
+        }
+        if (numberOfFails > 0) {
+          displayFailureMessage(numberOfFails)
+        }
+      }
+
+      presenter.onClearOptionMenuItemClicked()
+    }
+  }
+
+  private fun displaySuccessMessage(numberOfFilesSaved: Int) {
+    Snackbar.make(
+      binding.root,
+      resources.getQuantityString(R.plurals.numberOfFilesSuccessfullySave, numberOfFilesSaved, numberOfFilesSaved),
+      Snackbar.LENGTH_LONG
+    ).setTextColor(resources.getColor(R.color.snackbar_text_color, theme)).show()
+  }
+
+  private fun displayFailureMessage(numberOfFailure: Int) {
+    Snackbar.make(
+      binding.root,
+      resources.getQuantityString(R.plurals.numberOfFilesSaveFailure, numberOfFailure, numberOfFailure),
+      Snackbar.LENGTH_LONG
+    ).setTextColor(resources.getColor(R.color.snackbar_text_color_failure, theme)).show()
   }
 }

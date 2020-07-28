@@ -18,6 +18,8 @@ interface HomeContract {
     fun hideClearOptionMenu()
 
     fun showClearOptionMenu()
+
+    fun saveFiles(medias: List<Media>)
   }
 
   interface HomePresenter {
@@ -28,6 +30,8 @@ interface HomeContract {
     fun onClearOptionMenuItemClicked()
 
     fun onShareOptionMenuItemClicked()
+
+    fun onSaveOptionMenuItemClicked()
   }
 
   interface HomeCommand {
@@ -39,6 +43,10 @@ interface HomeContract {
 
     fun shareImages(medias: List<Media>)
 
+    fun saveImages(medias: List<Media>)
+
     fun shareVideos(medias: List<Media>)
+
+    fun saveVideos(medias: List<Media>)
   }
 }
