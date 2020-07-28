@@ -15,4 +15,10 @@ class Page(val title: String, val fragment: Fragment) : Shareable {
       fragment.onShareClicked()
     }
   }
+
+  override fun onSaveClicked() {
+    if (fragment is Shareable) {
+      fragment.onSaveClicked()
+    }
+  }
 }

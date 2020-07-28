@@ -10,22 +10,31 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
+import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
+import com.ouattararomuald.statussaver.core.FileHelper
 import com.ouattararomuald.statussaver.databinding.ActivityHomeBinding
 import com.ouattararomuald.statussaver.home.adapters.HomePagesAdapter
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.home.presenters.HomePresenter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.abs
 
 class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
-  EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
+    EasyPermissions.PermissionCallbacks, EasyPermissions.RationaleCallbacks {
 
   companion object {
-    private const val RC_READ_EXTERNAL_STORAGE = 0xcafe
+    private const val READ_EXTERNAL_STORAGE_REQ_CODE = 0xcafe
   }
 
   private lateinit var binding: ActivityHomeBinding
@@ -35,7 +44,10 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
   lateinit var presenter: HomeContract.HomePresenter
 
   private var clearOptionMenuItem: MenuItem? = null
+  private var saveOptionMenuItem: MenuItem? = null
   private var refreshOptionMenuItem: MenuItem? = null
+
+  private var fileHelper = FileHelper()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
@@ -117,24 +129,24 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
 
   private fun hasRequiredPermissions(): Boolean {
     val permissions = arrayOf(
-      Manifest.permission.WRITE_EXTERNAL_STORAGE,
-      Manifest.permission.READ_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
     )
     return EasyPermissions.hasPermissions(this, *permissions)
   }
 
-  @AfterPermissionGranted(RC_READ_EXTERNAL_STORAGE)
+  @AfterPermissionGranted(READ_EXTERNAL_STORAGE_REQ_CODE)
   private fun requestPermissions() {
     val permissions = arrayOf(
-      Manifest.permission.WRITE_EXTERNAL_STORAGE,
-      Manifest.permission.READ_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
     )
     if (EasyPermissions.hasPermissions(this, *permissions)) {
       presenter.discoverStatuses()
     } else {
       EasyPermissions.requestPermissions(
-        this, getString(R.string.read_external_storage_rationale),
-        RC_READ_EXTERNAL_STORAGE, *permissions
+          this, getString(R.string.read_external_storage_rationale),
+          READ_EXTERNAL_STORAGE_REQ_CODE, *permissions
       )
     }
   }
@@ -143,8 +155,9 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
     val inflater: MenuInflater = menuInflater
     inflater.inflate(R.menu.home, menu)
     if (menu != null) {
-      clearOptionMenuItem = menu.getItem(0)
-      refreshOptionMenuItem = menu.getItem(2)
+      clearOptionMenuItem = menu.findItem(R.id.clear_item)
+      saveOptionMenuItem = menu.findItem(R.id.save_item)
+      refreshOptionMenuItem = menu.findItem(R.id.refresh_item)
       refreshOptionMenuItem?.isEnabled = hasRequiredPermissions()
     }
     return true
@@ -154,6 +167,10 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
     return when (item.itemId) {
       R.id.clear_item -> {
         presenter.onClearOptionMenuItemClicked()
+        true
+      }
+      R.id.save_item -> {
+        presenter.onSaveOptionMenuItemClicked()
         true
       }
       R.id.share_item -> {
@@ -184,9 +201,47 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
 
   override fun hideClearOptionMenu() {
     clearOptionMenuItem?.isVisible = false
+    saveOptionMenuItem?.isVisible = false
   }
 
   override fun showClearOptionMenu() {
     clearOptionMenuItem?.isVisible = true
+    saveOptionMenuItem?.isVisible = true
+  }
+
+  override fun saveFiles(medias: List<Media>) {
+    val files = medias.map { it.file }
+    fileHelper.writeFiles(files) { numberOfSuccess ->
+      val numberOfFails = abs(files.size - numberOfSuccess)
+
+      if (numberOfSuccess == files.size - 1) {
+        displaySuccessMessage(numberOfSuccess)
+      } else {
+        if (numberOfSuccess > 0) {
+          displaySuccessMessage(numberOfSuccess)
+        }
+        if (numberOfFails > 0) {
+          displayFailureMessage(numberOfFails)
+        }
+      }
+
+      presenter.onClearOptionMenuItemClicked()
+    }
+  }
+
+  private fun displaySuccessMessage(numberOfFilesSaved: Int) {
+    Snackbar.make(
+        binding.root,
+        resources.getQuantityString(R.plurals.numberOfFilesSuccessfullySave, numberOfFilesSaved, numberOfFilesSaved),
+        Snackbar.LENGTH_LONG
+    ).setTextColor(resources.getColor(R.color.snackbar_text_color, theme)).show()
+  }
+
+  private fun displayFailureMessage(numberOfFailure: Int) {
+    Snackbar.make(
+        binding.root,
+        resources.getQuantityString(R.plurals.numberOfFilesSaveFailure, numberOfFailure, numberOfFailure),
+        Snackbar.LENGTH_LONG
+    ).setTextColor(resources.getColor(R.color.snackbar_text_color_failure, theme)).show()
   }
 }

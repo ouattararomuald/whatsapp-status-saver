@@ -7,17 +7,27 @@
         app:showAsAction="always"
         android:visible="false"
         />
+
+    <item android:id="@+id/save_item"
+        android:icon="@drawable/ic_save"
+        android:title="Save"
+        app:showAsAction="always"
+        android:visible="false"
+        />
+
     <item android:id="@+id/share_item"
         android:icon="@drawable/ic_share"
         android:title="@string/share_menu_item"
         app:showAsAction="always"
         />
+
     <item android:id="@+id/refresh_item"
         android:icon="@drawable/ic_refresh"
         android:title="@string/refresh_menu_item"
         android:enabled="false"
         app:showAsAction="never"
         />
+
     <item android:id="@+id/toggle_theme_item"
         android:icon="@drawable/ic_paint"
         android:title="@string/switch_theme"

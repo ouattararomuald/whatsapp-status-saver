@@ -181,6 +181,10 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     }
   }
 
+  override fun onSaveClicked() {
+    TODO("Not yet implemented")
+  }
+
   override fun onUpdateData(images: List<Media>, videos: List<Media>) {
     displayMedias(images, videos)
   }

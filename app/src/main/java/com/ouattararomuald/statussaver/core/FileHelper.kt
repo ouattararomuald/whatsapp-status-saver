@@ -1,22 +1,16 @@
 package com.ouattararomuald.statussaver.core
 
 import android.os.Environment
-import android.util.Log
 import com.ouattararomuald.statussaver.common.SAVED_MEDIA_DESTINATION_FOLDER_NAME
 import com.ouattararomuald.statussaver.db.GetOldMedias
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okio.buffer
 import okio.sink
 import okio.source
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.OutputStream
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.CoroutineContext
 
 class FileHelper: CoroutineScope {
@@ -47,6 +41,52 @@ class FileHelper: CoroutineScope {
   }
 
   /**
+   * Writes the given [inputFiles] into the given [outputStreams].
+   *
+   * @param outputStreams destination stream.
+   * @param inputFiles source file.
+   * @param onSuccess on success callback.
+   */
+  fun writeFiles(outputStreams: List<OutputStream>, inputFiles: List<File>, onSuccess: (numberOfSuccess: Int) -> Unit) = runBlocking {
+    if (outputStreams.size != inputFiles.size) {
+      return@runBlocking
+    }
+    val writtenFilesCounter = AtomicInteger(0)
+    val jobs = mutableListOf<Deferred<Int>>()
+    outputStreams.forEachIndexed { index, outputStream ->
+      val inputFile = inputFiles[index]
+      jobs.add(async(coroutineContext + handler) {
+        outputStream.use {
+          val sink = it.sink().buffer()
+          sink.writeAll(inputFile.source())
+          sink.close()
+          writtenFilesCounter.getAndIncrement()
+        }
+      })
+    }
+    jobs.awaitAll()
+    onSuccess(writtenFilesCounter.get())
+  }
+
+  /**
+   * Writes the given [inputFile] into the given [outputStream].
+   *
+   * @param outputStream destination stream.
+   * @param inputFile source file.
+   * @param onSuccess on success callback.
+   */
+  fun writeFile(outputStream: OutputStream, inputFile: File, onSuccess: () -> Unit) {
+    launch(coroutineContext + handler) {
+      outputStream.use {
+        val sink = it.sink().buffer()
+        sink.writeAll(inputFile.source())
+        sink.close()
+        onSuccess()
+      }
+    }
+  }
+
+  /**
    * Writes the given [inputFile] into the given [outputStream].
    *
    * @param outputStream destination stream.
@@ -62,22 +102,62 @@ class FileHelper: CoroutineScope {
     }
   }
 
+  fun writeFiles(filesToWrite: List<File>, onSuccess: (numberOfSuccess: Int) -> Unit) = runBlocking {
+    val writtenFilesCounter = AtomicInteger(0)
+    val jobs = mutableListOf<Deferred<Int>>()
+    filesToWrite.forEach { fileToWrite ->
+      jobs.add(async(coroutineContext + handler) {
+        val fileName = fileToWrite.name
+
+        val baseFolder = File(Environment.getExternalStorageDirectory(), SAVED_MEDIA_DESTINATION_FOLDER_NAME)
+        if (!baseFolder.exists()) {
+          baseFolder.mkdir()
+        }
+
+        val destinationFile = File(
+          Environment.getExternalStorageDirectory(),
+          "$SAVED_MEDIA_DESTINATION_FOLDER_NAME/${fileName}"
+        )
+        if (!destinationFile.exists()) {
+          destinationFile.createNewFile()
+        }
+
+        val fileOutputStream = FileOutputStream(destinationFile)
+        fileOutputStream.use {
+          val sink = it.sink().buffer()
+          sink.writeAll(fileToWrite.source())
+          sink.close()
+          writtenFilesCounter.getAndIncrement()
+        }
+      })
+    }
+    jobs.awaitAll()
+    onSuccess(writtenFilesCounter.get())
+  }
+
   fun writeFile(fileToWrite: File, onFinishBlock: suspend CoroutineScope.() -> Unit) {
     launch(coroutineContext + handler) {
       val fileName = fileToWrite.name
+
+      val baseFolder = File(Environment.getExternalStorageDirectory(), SAVED_MEDIA_DESTINATION_FOLDER_NAME)
+      if (!baseFolder.exists()) {
+        baseFolder.mkdir()
+      }
+
       val destinationFile = File(
         Environment.getExternalStorageDirectory(),
         "$SAVED_MEDIA_DESTINATION_FOLDER_NAME/${fileName}"
       )
+      if (!destinationFile.exists()) {
+        destinationFile.createNewFile()
+      }
 
       val fileOutputStream = FileOutputStream(destinationFile)
-
-      try {
-        fileOutputStream.write(android.R.attr.data)
+      fileOutputStream.use {
+        val sink = it.sink().buffer()
+        sink.writeAll(fileToWrite.source())
+        sink.close()
         onFinishBlock()
-      } catch (e: IOException) {
-      } finally {
-        fileOutputStream.close()
       }
     }
   }

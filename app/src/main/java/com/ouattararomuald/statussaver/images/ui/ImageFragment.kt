@@ -121,6 +121,10 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     homeCommand?.shareImages(selectedMedia.keys.toList())
   }
 
+  override fun onSaveClicked() {
+    homeCommand?.saveImages(selectedMedia.keys.toList())
+  }
+
   override fun displayMedias(medias: List<Media>) {
     val items = medias.mapIndexed { index, media -> media.toImageItem(index) }
     imageItems.clear()

@@ -10,6 +10,7 @@ import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.common.UpdatableOldMedia
+import com.ouattararomuald.statussaver.core.FileHelper
 import com.ouattararomuald.statussaver.core.db.DbMediaDAO
 import com.ouattararomuald.statussaver.core.db.MediaDAO
 import com.ouattararomuald.statussaver.home.models.Page
@@ -135,6 +136,17 @@ class HomePresenter(
     }
   }
 
+  override fun onSaveOptionMenuItemClicked() {
+    if (!::pages.isInitialized) {
+      return
+    }
+    pages.forEach { page ->
+      if (currentFragment == page.fragment) {
+        page.onSaveClicked()
+      }
+    }
+  }
+
   override fun setCurrentView(fragment: Fragment) {
     this.currentFragment = fragment
   }
@@ -155,6 +167,10 @@ class HomePresenter(
     }
   }
 
+  override fun saveImages(medias: List<Media>) {
+    view.saveFiles(medias)
+  }
+
   override fun shareVideos(medias: List<Media>) {
     if (medias.isEmpty()) {
       view.openChooserForIntent(getShareAppIntent())
@@ -162,6 +178,10 @@ class HomePresenter(
       //FIXME: Should be VIDEO_MIME_TYPE but it's doesn't allow to share with all apps
       view.openChooserForIntent(getMediasShareIntent(medias, IMAGE_MIME_TYPE))
     }
+  }
+
+  override fun saveVideos(medias: List<Media>) {
+    view.saveFiles(medias)
   }
 
   private fun getShareAppIntent(): Intent {

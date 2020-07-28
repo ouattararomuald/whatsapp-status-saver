@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <plurals name="numberOfFilesSuccessfullySave">
+    <item quantity="one">%d file has been successfully saved.</item>
+    <item quantity="other">%d files have been successfully saved.</item>
+  </plurals>
+  <plurals name="numberOfFilesSaveFailure">
+    <item quantity="one">Oups! Something went wrong. Failed to save %d file.</item>
+    <item quantity="other">Oups! Something went wrong. Failed to save %d files.</item>
+  </plurals>
+</resources>
