@@ -82,7 +82,7 @@ class FullScreenImageViewerActivity : MediaViewerActivity() {
     binding.saveImageButton.setOnClickListener {
       if (selectedImageIndex >= 0 && selectedImageIndex < images.size) {
         val imageMedia = images[selectedImageIndex]
-        //imageToWriteIndex = selectedImageIndex
+        imageToWriteIndex = selectedImageIndex
         saveFile(imageMedia.file)
       }
     }
