@@ -1,5 +1,6 @@
 package com.ouattararomuald.statussaver.media.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.MediaType
 import com.ouattararomuald.statussaver.R
+import com.ouattararomuald.statussaver.common.NUMBER_OF_SPANS_IN_LANDSCAPE
+import com.ouattararomuald.statussaver.common.NUMBER_OF_SPANS_IN_PORTRAIT
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.UpdatableOldMedia
 import com.ouattararomuald.statussaver.common.ui.EmptyItem
@@ -49,6 +52,18 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
 
   var homeCommand: HomeContract.HomeCommand? = null
 
+  private var spanCount: Int = NUMBER_OF_SPANS_IN_PORTRAIT
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val currentOrientation = resources.configuration.orientation
+    spanCount = if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+      NUMBER_OF_SPANS_IN_LANDSCAPE
+    } else {
+      NUMBER_OF_SPANS_IN_PORTRAIT
+    }
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -61,7 +76,7 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
         this
     )
     groupAdapter = GroupAdapter()
-    groupAdapter.spanCount = 2
+    groupAdapter.spanCount = spanCount
     gridLayoutManager = GridLayoutManager(context, groupAdapter.spanCount).apply {
       spanSizeLookup = groupAdapter.spanSizeLookup
     }
@@ -84,6 +99,10 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     }
 
     groupAdapter.setOnItemLongClickListener { item, _ ->
+      if (!typeSupportLongClick(item)) {
+        return@setOnItemLongClickListener false
+      }
+
       if (selectedItem == item) {
         changeCurrentSelectionVisualState()
       } else {
@@ -100,6 +119,10 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     }
 
     return view
+  }
+
+  private fun typeSupportLongClick(item: Item<*>): Boolean {
+    return item is ImageItem || item is VideoItem
   }
 
   private fun changeCurrentSelectionVisualState() {
@@ -206,7 +229,17 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
   }
 
   override fun onSaveClicked() {
-    homeCommand?.saveFiles(imageItems.map { it.media } + videoItems.map { it.media })
+    selectedItem?.let { item ->
+      when(item) {
+        is ImageItem -> {
+          homeCommand?.saveFiles(listOf(item.media))
+        }
+        is VideoItem -> {
+          homeCommand?.saveFiles(listOf(item.media))
+        }
+        else -> {} // Nothing to do
+      }
+    }
   }
 
   override fun onUpdateData(images: List<Media>, videos: List<Media>) {
@@ -222,7 +255,7 @@ class OldMediaFragment : Fragment(), MediaContract.MediaView, Shareable, Updatab
     videosSection.update(videoMediaItems)
   }
 
-  private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position)
+  private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position, spanCount)
 
-  private fun Media.toVideoItem(position: Int): VideoItem = VideoItem(this, position)
+  private fun Media.toVideoItem(position: Int): VideoItem = VideoItem(this, position, spanCount)
 }

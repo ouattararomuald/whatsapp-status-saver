@@ -1,5 +1,8 @@
 package com.ouattararomuald.statussaver.images.ui
 
+import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.common.NUMBER_OF_SPANS_IN_LANDSCAPE
+import com.ouattararomuald.statussaver.common.NUMBER_OF_SPANS_IN_PORTRAIT
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.databinding.FragmentImagesBinding
@@ -17,6 +22,7 @@ import com.ouattararomuald.statussaver.images.presenters.ImageContract
 import com.ouattararomuald.statussaver.images.presenters.ImagePresenter
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.Item
 import com.xwray.groupie.Section
 
 class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable {
@@ -46,6 +52,18 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
 
   var homeCommand: HomeContract.HomeCommand? = null
 
+  private var spanCount: Int = NUMBER_OF_SPANS_IN_PORTRAIT
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val currentOrientation = resources.configuration.orientation
+    spanCount = if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+      NUMBER_OF_SPANS_IN_LANDSCAPE
+    } else {
+      NUMBER_OF_SPANS_IN_PORTRAIT
+    }
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
   ): View? {
@@ -53,7 +71,7 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     val view = binding.root
     presenter = ImagePresenter(arguments?.getParcelableArrayList(IMAGES_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
-    groupAdapter.spanCount = 2
+    groupAdapter.spanCount = spanCount
     //section.setPlaceholder(EmptyItem())
 
     gridLayoutManager = GridLayoutManager(context, groupAdapter.spanCount).apply {
@@ -69,39 +87,48 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     }
 
     groupAdapter.setOnItemClickListener { item, _ ->
-      if (item is ImageItem) {
+      if (selectedMedia.isNotEmpty()) {
+        handleLongClick(item)
+      } else if (item is ImageItem) {
         FullScreenImageViewerActivity.start(context!!, imageItems.map { it.media }, item.position)
       }
     }
 
     groupAdapter.setOnItemLongClickListener { item, _ ->
-      if (item is ImageItem) {
-        item.toggleSelectionState()
-        if (item.isSelected) {
-          selectedMedia[item.media] = item
-        } else {
-          selectedMedia.remove(item.media)
-        }
-      }
-
-      if (selectedMedia.isEmpty()) {
-        homeCommand?.onSelectionCleared()
-      } else {
-        homeCommand?.onMediaSelected()
-      }
+      handleLongClick(item)
 
       true
     }
 
     presenter.start()
 
+    if (savedInstanceState != null) {
+      binding.root.background = ColorDrawable(Color.CYAN)
+    }
+
     return view
+  }
+
+  private fun handleLongClick(item: Item<*>) {
+    if (item is ImageItem) {
+      item.toggleSelectionState()
+      if (item.isSelected) {
+        selectedMedia[item.media] = item
+      } else {
+        selectedMedia.remove(item.media)
+      }
+    }
+
+    if (selectedMedia.isEmpty()) {
+      homeCommand?.onSelectionCleared()
+    } else {
+      homeCommand?.onMediaSelected()
+    }
   }
 
   override fun onResume() {
     super.onResume()
     homeCommand?.setCurrentView(this)
-    onClearSelection()
   }
 
   override fun onPause() {
@@ -136,5 +163,5 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     displayMedias(medias)
   }
 
-  private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position)
+  private fun Media.toImageItem(position: Int): ImageItem = ImageItem(this, position, spanCount)
 }

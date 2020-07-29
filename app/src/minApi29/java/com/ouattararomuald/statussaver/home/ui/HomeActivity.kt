@@ -32,7 +32,6 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
 import java.io.OutputStream
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 
 class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
@@ -163,9 +162,6 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
         stream?.let {
           outputStreams.add(stream)
           inputFiles.add(media.file)
-          /*fileHelper.writeFile(stream, media.file) {
-            writtenFilesCounter.incrementAndGet()
-          }*/
         }
       }
     }
@@ -296,8 +292,8 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
     binding.pager.adapter = HomePagesAdapter(pages, this)
     tabLayoutMediator = TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
       tab.text = pages[position].title
-    }
-    tabLayoutMediator?.attach()
+    }.also { it.attach() }
+    //tabLayoutMediator?.attach()
   }
 
   override fun openChooserForIntent(shareIntent: Intent) {

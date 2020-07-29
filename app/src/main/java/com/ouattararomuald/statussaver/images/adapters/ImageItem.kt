@@ -11,7 +11,11 @@ import com.ouattararomuald.statussaver.databinding.ViewImageBinding
 import com.xwray.groupie.Item
 import com.xwray.groupie.viewbinding.BindableItem
 
-class ImageItem(val media: Media, val position: Int) : BindableItem<ViewImageBinding>() {
+class ImageItem(
+  val media: Media,
+  val position: Int,
+  private val totalSpanCount: Int
+) : BindableItem<ViewImageBinding>() {
 
   private lateinit var selectorFrameLayout: FrameLayout
 
@@ -20,7 +24,7 @@ class ImageItem(val media: Media, val position: Int) : BindableItem<ViewImageBin
 
   override fun getLayout(): Int = R.layout.view_image
 
-  override fun getSpanSize(spanCount: Int, position: Int): Int = spanCount / 2
+  override fun getSpanSize(spanCount: Int, position: Int): Int = spanCount / totalSpanCount
 
   override fun bind(viewBinding: ViewImageBinding, position: Int) {
     selectorFrameLayout = viewBinding.selectorFrameLayout

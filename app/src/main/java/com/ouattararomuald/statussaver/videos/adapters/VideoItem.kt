@@ -23,7 +23,11 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-class VideoItem(val media: Media, val position: Int) : BindableItem<ViewVideoBinding>(), CoroutineScope {
+class VideoItem(
+  val media: Media,
+  val position: Int,
+  private val totalSpanCount: Int
+) : BindableItem<ViewVideoBinding>(), CoroutineScope {
 
   private val job = SupervisorJob()
 
@@ -37,7 +41,7 @@ class VideoItem(val media: Media, val position: Int) : BindableItem<ViewVideoBin
 
   override fun getLayout(): Int = R.layout.view_video
 
-  override fun getSpanSize(spanCount: Int, position: Int): Int = spanCount / 2
+  override fun getSpanSize(spanCount: Int, position: Int): Int = spanCount / totalSpanCount
 
   override fun bind(viewBinding: ViewVideoBinding, position: Int) {
     selectorFrameLayout = viewBinding.selectorFrameLayout
