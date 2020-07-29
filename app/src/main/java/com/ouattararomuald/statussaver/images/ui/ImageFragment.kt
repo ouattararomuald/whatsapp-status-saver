@@ -1,8 +1,6 @@
 package com.ouattararomuald.statussaver.images.ui
 
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -101,10 +99,6 @@ class ImageFragment : Fragment(), ImageContract.ImageView, Shareable, Updatable 
     }
 
     presenter.start()
-
-    if (savedInstanceState != null) {
-      binding.root.background = ColorDrawable(Color.CYAN)
-    }
 
     return view
   }
