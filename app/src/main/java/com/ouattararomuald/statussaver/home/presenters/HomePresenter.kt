@@ -10,7 +10,6 @@ import com.ouattararomuald.statussaver.Media
 import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.common.UpdatableOldMedia
-import com.ouattararomuald.statussaver.core.FileHelper
 import com.ouattararomuald.statussaver.core.db.DbMediaDAO
 import com.ouattararomuald.statussaver.core.db.MediaDAO
 import com.ouattararomuald.statussaver.home.models.Page
@@ -32,6 +31,17 @@ class HomePresenter(
   private var currentFragment: Fragment? = null
 
   private val mediaDAO: MediaDAO = DbMediaDAO(context)
+
+  override fun discoverStatuses() {
+    statusFinder.findStatuses()
+    statusesSnapshot = statusFinder.getSnapshot()
+
+    saveStatuses()
+
+    initializedPages()
+
+    view.displayPages(pages)
+  }
 
   private fun initializedPages() {
     pages = arrayOf(
@@ -62,17 +72,6 @@ class HomePresenter(
         }
       }
     }
-  }
-
-  override fun discoverStatuses() {
-    statusFinder.findStatuses()
-    statusesSnapshot = statusFinder.getSnapshot()
-
-    saveStatuses()
-
-    initializedPages()
-
-    view.displayPages(pages)
   }
 
   override fun refreshData() {

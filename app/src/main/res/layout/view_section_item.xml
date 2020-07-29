@@ -8,6 +8,7 @@
     android:layout_margin="@dimen/section_title_margin"
     android:textColor="@color/section_title_color"
     android:textStyle="bold"
+    android:textAlignment="textEnd"
     tools:text="Section Title"
     tools:textColor="@color/section_title_color"
     tools:textStyle="bold"

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+  <androidx.cardview.widget.CardView
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_margin="2dp"
+      android:foreground="?android:attr/selectableItemBackground"
+      android:padding="2dp"
+      app:cardCornerRadius="8dp"
+      app:cardUseCompatPadding="true"
+      app:elevation="8dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintDimensionRatio="1:1"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <androidx.appcompat.widget.AppCompatImageView
+          android:id="@+id/imageView"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:scaleType="centerCrop"
+          tools:src="@tools:sample/avatars"
+          />
+
+      <androidx.appcompat.widget.AppCompatImageView
+          android:id="@+id/playImageView"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:layout_gravity="center"
+          android:scaleType="centerCrop"
+          android:tint="@color/white"
+          app:srcCompat="@drawable/ic_play_circle_outline" />
+
+      <FrameLayout
+          android:id="@+id/selectorFrameLayout"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@color/selection_background"
+          android:visibility="gone">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/checkImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/ic_check"
+            />
+      </FrameLayout>
+    </FrameLayout>
+  </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

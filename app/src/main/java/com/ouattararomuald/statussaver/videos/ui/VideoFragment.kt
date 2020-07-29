@@ -1,5 +1,6 @@
 package com.ouattararomuald.statussaver.videos.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.common.NUMBER_OF_SPANS_IN_LANDSCAPE
+import com.ouattararomuald.statussaver.common.NUMBER_OF_SPANS_IN_PORTRAIT
 import com.ouattararomuald.statussaver.common.Shareable
 import com.ouattararomuald.statussaver.common.Updatable
 import com.ouattararomuald.statussaver.databinding.FragmentVideosBinding
@@ -17,6 +20,7 @@ import com.ouattararomuald.statussaver.videos.presenters.VideoContract
 import com.ouattararomuald.statussaver.videos.presenters.VideoPresenter
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.Item
 import com.xwray.groupie.Section
 
 class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable {
@@ -27,7 +31,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     @JvmStatic
     fun newInstance(medias: List<Media>): VideoFragment {
       val bundle = bundleOf(
-        VIDEOS_KEY to medias
+          VIDEOS_KEY to medias
       )
       return VideoFragment().apply {
         arguments = bundle
@@ -45,14 +49,27 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
 
   var homeCommand: HomeContract.HomeCommand? = null
 
+  private var spanCount: Int = NUMBER_OF_SPANS_IN_PORTRAIT
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val currentOrientation = resources.configuration.orientation
+    spanCount = if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+      NUMBER_OF_SPANS_IN_LANDSCAPE
+    } else {
+      NUMBER_OF_SPANS_IN_PORTRAIT
+    }
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
   ): View? {
     binding = FragmentVideosBinding.inflate(layoutInflater, container, false)
     val view = binding.root
-    presenter = VideoPresenter(arguments?.getParcelableArrayList(VideoFragment.VIDEOS_KEY) ?: emptyList(), this)
+    presenter =
+        VideoPresenter(arguments?.getParcelableArrayList(VIDEOS_KEY) ?: emptyList(), this)
     groupAdapter = GroupAdapter()
-    groupAdapter.spanCount = 2
+    groupAdapter.spanCount = spanCount
     //section.setPlaceholder(EmptyItem())
 
     groupAdapter.add(section)
@@ -65,26 +82,15 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     }
 
     groupAdapter.setOnItemClickListener { item, _ ->
-      if (item is VideoItem) {
+      if (selectedMedia.isNotEmpty()) {
+        handleLongClick(item)
+      } else if (item is VideoItem) {
         VideoPlayerActivity.start(context!!, videoItems.map { it.media }, item.position)
       }
     }
 
     groupAdapter.setOnItemLongClickListener { item, _ ->
-      if (item is VideoItem) {
-        item.toggleSelectionState()
-        if (item.isSelected) {
-          selectedMedia[item.media] = item
-        } else {
-          selectedMedia.remove(item.media)
-        }
-      }
-
-      if (selectedMedia.isEmpty()) {
-        homeCommand?.onSelectionCleared()
-      } else {
-        homeCommand?.onMediaSelected()
-      }
+      handleLongClick(item)
 
       true
     }
@@ -92,6 +98,23 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     presenter.start()
 
     return view
+  }
+
+  private fun handleLongClick(item: Item<*>) {
+    if (item is VideoItem) {
+      item.toggleSelectionState()
+      if (item.isSelected) {
+        selectedMedia[item.media] = item
+      } else {
+        selectedMedia.remove(item.media)
+      }
+    }
+
+    if (selectedMedia.isEmpty()) {
+      homeCommand?.onSelectionCleared()
+    } else {
+      homeCommand?.onMediaSelected()
+    }
   }
 
   override fun onResume() {
@@ -121,7 +144,7 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
   }
 
   override fun displayMedias(medias: List<Media>) {
-    val items = medias.mapIndexed { index, media ->  media.toVideoItem(index) }
+    val items = medias.mapIndexed { index, media -> media.toVideoItem(index) }
     videoItems.clear()
     videoItems.addAll(items)
     section.update(items)
@@ -131,5 +154,5 @@ class VideoFragment : Fragment(), VideoContract.VideoView, Shareable, Updatable 
     displayMedias(medias)
   }
 
-  private fun Media.toVideoItem(position: Int): VideoItem = VideoItem(this, position)
+  private fun Media.toVideoItem(position: Int): VideoItem = VideoItem(this, position, spanCount)
 }
