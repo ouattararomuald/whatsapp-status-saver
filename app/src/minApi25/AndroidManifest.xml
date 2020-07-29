@@ -14,7 +14,8 @@
       android:supportsRtl="true"
       android:requestLegacyExternalStorage="true"
       android:theme="@style/Theme.StatusSaver">
-    <activity android:name=".home.ui.HomeActivity">
+    <activity android:name=".home.ui.HomeActivity"
+        android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
