@@ -27,6 +27,8 @@ import com.ouattararomuald.statussaver.home.adapters.HomePagesAdapter
 import com.ouattararomuald.statussaver.home.models.Page
 import com.ouattararomuald.statussaver.home.presenters.HomeContract
 import com.ouattararomuald.statussaver.home.presenters.HomePresenter
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -71,9 +73,27 @@ class HomeActivity : AppCompatActivity(), HomeContract.HomeView,
       requestPermissions()
     }
 
+    saveLastLaunchDate()
+
     presenter = HomePresenter(this, this)
 
     displayViewBasedOnAuthorizations()
+  }
+
+  private fun saveLastLaunchDate() {
+    val defaultDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+    val todayDate = sharedPrefs.getString(
+      getString(R.string.today_launch_date_key),
+      defaultDate
+    )
+    sharedPrefs.edit().putString(
+      getString(R.string.last_launch_date_key),
+      todayDate
+    ).apply()
+    sharedPrefs.edit().putString(
+      getString(R.string.today_launch_date_key),
+      defaultDate
+    ).apply()
   }
 
   private fun displayViewBasedOnAuthorizations() {

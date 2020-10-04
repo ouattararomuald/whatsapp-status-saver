@@ -6,6 +6,8 @@
 
   <string name="shared_preferences_key">com.ouattararomuald.statussaver.PREF_FILE_KEY</string>
   <string name="save_dir_key">SAVE_DIR</string>
+  <string name="today_launch_date_key">TODAY_LAUNCH_DATE</string>
+  <string name="last_launch_date_key">LAST_LAUNCH_DATE</string>
 
   <string name="old_medias_fragment_title">Old statuses</string>
   <string name="images_fragment_title">Images</string>

@@ -1,7 +1,9 @@
 package com.ouattararomuald.statussaver.core.db
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.ouattararomuald.statussaver.Media
+import com.ouattararomuald.statussaver.R
 import com.ouattararomuald.statussaver.core.MediaDiskCache
 import com.ouattararomuald.statussaver.core.databaseProvider
 import com.ouattararomuald.statussaver.db.GetOldMedias
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
@@ -35,8 +38,30 @@ class DbMediaDAO(context: Context) : MediaDAO, CoroutineScope {
   private val handler = CoroutineExceptionHandler { _, exception ->
   }
 
+  private val sharedPrefs: SharedPreferences by lazy {
+    context.getSharedPreferences(
+      context.getString(R.string.shared_preferences_key),
+      Context.MODE_PRIVATE
+    )
+  }
+
+  private val lastLaunchDate: LocalDateTime = LocalDateTime.parse(
+    sharedPrefs.getString(
+      context.getString(R.string.last_launch_date_key),
+      LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+    ),
+    DateTimeFormatter.ISO_DATE_TIME
+  )
+
   init {
-    deleteOldMedias()
+    if (shouldDeleteOldMedia()) {
+      deleteOldMedias()
+    }
+  }
+
+  private fun shouldDeleteOldMedia(): Boolean {
+    val threeDaysBeforeDate = getTodayDate().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+    return !lastLaunchDate.isBefore(threeDaysBeforeDate)
   }
 
   private fun deleteOldMedias() {
@@ -65,7 +90,14 @@ class DbMediaDAO(context: Context) : MediaDAO, CoroutineScope {
       .map { Media(File(it.absolutePath), it.mediaType) }
   }
 
-  private fun getOldestDate(): LocalDateTime = getTodayDate().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+  private fun getOldestDate(): LocalDateTime  {
+    val threeDaysBeforeDate = getTodayDate().minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+    return if (lastLaunchDate.isBefore(threeDaysBeforeDate)) {
+      lastLaunchDate.minusDays(STATUSES_MAX_CONSERVATION_DAYS)
+    } else {
+      threeDaysBeforeDate
+    }
+  }
 
   private fun getYesterdayDate(): LocalDateTime = getTodayDate().minusDays(1)
 
