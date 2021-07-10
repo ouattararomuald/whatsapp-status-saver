@@ -3,4 +3,6 @@
   <external-cache-path path="." name="cache_medias" />
   <external-path path="WhatsApp/Media/.Statuses/" name="medias" />
   <external-path path="WhatsApp Business/Media/.Statuses/" name="business_medias" />
+  <external-path path="Android/media/com.whatsapp/WhatsApp/Media/.Statuses/" name="medias_android_11" />
+  <external-path path="Android/media/com.whatsapp/WhatsApp Business/Media/.Statuses/" name="business_medias_android_11" />
 </paths>
